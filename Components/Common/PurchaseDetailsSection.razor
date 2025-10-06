@@ -1,0 +1,212 @@
+@using Financials.Data
+
+<div class="purchase-details-section">
+    <div class="purchase-details-grid-table">
+        <div class="purchase-details">
+            <div class="header purchase-details-header">Purchase Details</div>
+            <div class="label">Orig Purch Price</div>
+            <div class="label">Ownership %</div>
+            <div class="label">Ownership Detail</div>
+        </div>
+        <div></div>
+        <div class="information">
+            <div class="information-grid-table">
+                <div class="information-left">
+                    <div class="header information-header">Amount</div>
+                    <div class="purchase-price-value"><input type="text" value="@(Asset?.Value ?? 0)" /></div>
+                    <div class="ownership-pct-value"><input type="text" value="@(Asset?.OwnershipPct ?? 0)" /></div>
+                </div>
+                <div></div>
+                <div class="information-right">
+                    <div class="header information-header">As of Date</div>
+                    <div class="date-field purchase-date-value"><input type="date" value="@(Asset?.PurchPriceDate?.ToString("yyyy-MM-dd") ?? "")" /></div>
+                    <div class="date-field ownership-date-value"><input type="date" value="@(Asset?.OwnershipPctDate?.ToString("yyyy-MM-dd") ?? "")" /></div>
+                </div>
+            </div>
+            <div class="ownership-detail-value"><input type="text" value="@(Asset?.OwnershipDetail ?? "")" /></div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Asset? Asset { get; set; }
+}
+
+<style>
+
+.purchase-details-section {
+    width: 496px;
+    height: 137px;
+    flex-shrink: 0;
+    border-radius: 5px;
+    border: 0.5px solid #4C4C4F;
+    background: #FFF;
+    margin: 0;
+}
+
+.purchase-details-grid-table {
+    display: grid;
+    padding: 18.5px 20px 20px 20px;
+    grid-template-columns: 136px 16px 1fr;
+    gap: 0px;
+}
+
+.information-grid-table {
+    display: grid;
+    grid-template-columns: 66px 26px 1fr;
+    gap: 0px;
+}
+
+.purchase-details .header,
+.information .header {
+  margin-bottom: 6.5px;
+}
+
+.purchase-details .header {
+  text-align: right;
+}
+
+.purchase-details div,
+.information-left div,
+.information-right div {
+  margin-bottom: 4px;
+}
+
+.header {
+    color: #093B5D;
+    text-align: left;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+.purchase-details-header {
+    text-align: right;
+}
+
+.label {
+    color: #000;
+    text-align: right;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+.value {
+    color: #0775C4;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+input,
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+    color: #0775C4;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    width: 100%;
+    transition: background-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+input:focus {
+    color: #055a9e;
+    background-color: rgba(7, 117, 196, 0.05);
+}
+
+input[type="date"] {
+    color: #0775C4;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20.8px;
+    letter-spacing: 0.24px;
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none;
+    width: 120px;
+    transition: background-color 0.2s ease;
+    box-sizing: border-box;
+    cursor: pointer;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.date-field {
+    height: 20.8px;
+}
+
+/* Remove calendar icon in Chrome, Safari, Edge */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+/* Remove calendar icon in Firefox */
+input[type="date"]::-moz-calendar-picker-indicator {
+    display: none;
+}
+
+/* Remove calendar icon in old Edge/IE */
+input[type="date"]::-ms-clear,
+input[type="date"]::-ms-expand {
+    display: none;
+}
+
+/* Remove extra space in Firefox */
+input[type="date"]::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+/* Remove extra space in Chrome/Safari */
+input[type="date"]::-webkit-input-placeholder {
+    color: #0775C4;
+    opacity: 0.6;
+}
+
+/* Remove spinner buttons from number inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.date-field input[type="date"] {
+    width: 120px;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+}
+</style>

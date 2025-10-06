@@ -1,0 +1,434 @@
+@page "/investments"
+@rendermode InteractiveServer
+@using Financials.Data
+@using Financials.Data.Services
+@using Financials.Data.Classes
+@using Financials.Components.Common
+@inject InvestmentService InvestmentService
+@inject DebtService DebtService
+@inject AssetService AssetService
+@inject SavingsService SavingsService
+@implements IDisposable
+
+<link rel="stylesheet" href="/investments-table.css" />
+
+
+<div class="investments-container">
+    <div class="header">
+        <div class="header-content">
+            <div class="header-item time">Time</div>
+            <div class="header-item owner">Owner</div>
+            <div class="header-item value">Value</div>
+            <div class="header-item acct-type">Acct Type</div>
+            <div class="header-item report-description">Report Description</div>
+            <div class="header-item as-of">As Of</div>
+        </div>
+        <div class="select-asset">Select Investment</div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34" fill="none">
+            <path d="M13.26 10.88H20.74V13.6H13.26V10.88ZM22.1 13.6H29.58V10.88H22.1V13.6ZM4.41998 13.6H11.9V10.88H4.41998V13.6ZM13.26 17.68H20.74V14.96H13.26V17.68ZM22.1 17.68H29.58V14.96H22.1V17.68ZM4.41998 17.68H11.9V14.96H4.41998V17.68ZM22.1 21.76H29.58V19.04H22.1V21.76ZM13.26 21.76H20.74V19.04H13.26V21.76ZM4.41998 21.76H11.9V19.04H4.41998V21.76ZM22.1 25.84H29.58V23.12H22.1V25.84ZM13.26 25.84H20.74V23.12H13.26V25.84ZM4.41998 25.84H11.9V23.12H4.41998V25.84ZM22.1 29.92H29.58V27.2H22.1V29.92ZM13.26 29.92H20.74V27.2H13.26V29.92ZM4.41998 29.92H11.9V27.2H4.41998V29.92ZM4.41998 4.07996V9.51996H29.58V4.07996H4.41998Z" fill="white"/>
+        </svg>
+    </div>
+
+    <div class="content-container">
+        <div class="investments-table">
+            @foreach (var investment in investments)
+            {
+                <div class="investment-row @(selectedInvestment == investment ? "selected" : "")" 
+                     @onclick="() => SelectInvestment(investment)">
+                    <div class="cell time">
+                        <CustomDropdown 
+                            Value="@investment.Timeframe" 
+                            Options="@timeframeOptions" 
+                            ValueChanged="@(v => UpdateTimeframe(investment, v))" />
+                    </div>
+                    <div class="cell owner">
+                        <CustomDropdown 
+                            Value="@investment.Owner" 
+                            Options="@ownerOptions" 
+                            ValueChanged="@(v => UpdateOwner(investment, v))" />
+                    </div>
+                    <div class="cell value">@(investment.CurrentValue?.ToString("N0") ?? "n/a")</div>
+                    <div class="cell acct-type">@(investment.AccountType ?? "n/a")</div>
+                    <div class="cell report-description">@(investment.ReportDesc ?? "n/a")</div>
+                    <div class="cell as-of">@(investment.ValueDate?.ToString("MM/dd/yy") ?? "n/a")</div>
+                </div>
+            }
+            <div class="totals-row">
+                <div class="total-item">
+                    <span class="total-label">Total</span>
+                    <span class="total-value">@(investments.Sum(i => i.CurrentValue)?.ToString("N0") ?? "0")</span>
+                </div>
+                @foreach (var owner in investments.Select(i => i.Owner).Distinct().Where(o => !string.IsNullOrEmpty(o)).OrderBy(o => o))
+                {
+                    <div class="owner-total-item">
+                        <span class="owner-label">@owner)</span>
+                        <span class="owner-value">@(investments.Where(i => i.Owner == owner).Sum(i => i.CurrentValue)?.ToString("N0") ?? "0")</span>
+                    </div>
+                }
+            </div>
+        </div>
+        
+        <div class="scrollable-section">
+            @if (selectedInvestment != null)
+            {
+                <Notes Note="@selectedInvestment.Notes" Width="708px" />
+                
+                <div class="investment-firm-section">
+                    <div class="firm-input-container">
+                        <input type="text" class="firm-input" placeholder="Enter Investment Firm" />
+                        <div class="checkbox-container">
+                            <input type="checkbox" class="outside-investment-checkbox" checked />
+                            <span class="checkbox-label">(Outside Investment)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sum-total-section">
+                    <div class="sum-total-container">
+                        <div class="breakdown-item sum-total-item">
+                            <span class="breakdown-label">Sum Total</span>
+                            <input type="text" class="breakdown-input sum-total-input" value="@sumTotal.ToString("N0")" readonly />
+                        </div>
+                        <span class="equals"></span>
+                        <div class="equation-breakdown">
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Pre-tax</span>
+                                <div class="breakdown-input">
+                                    <NumberInput Value="@preTaxDecimal" ValueChanged="@(v => preTaxDecimal = v)" />
+                                </div>
+                            </div>
+                            <span class="plus"></span>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Roth</span>
+                                <div class="breakdown-input">
+                                    <NumberInput Value="@rothDecimal" ValueChanged="@(v => rothDecimal = v)" />
+                                </div>
+                            </div>
+                            <span class="plus"></span>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">After-tax</span>
+                                <div class="breakdown-input">
+                                    <NumberInput Value="@afterTaxDecimal" ValueChanged="@(v => afterTaxDecimal = v)" />
+                                </div>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label tax-paid-label">Tax-Paid</span>
+                                <div class="breakdown-input tax-paid">
+                                    <NumberInput Value="@taxPaidDecimal" ValueChanged="@(v => taxPaidDecimal = v)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div style="margin-top: 30px; margin-left: 30px;">
+                    <LinkTable 
+                        Title="Associated Loans"
+                        DataType="debts"
+                        Width="728px"
+                        Headers='new List<string> { "Balance", "Pmt Made", "Rate", "Term", "Report Description", "As Of" }'
+                        ColumnWidths='new List<int> { 115, 100, 84, 84, 250, 94 }'
+                        ColumnAlignments='new List<string> { "right", "right", "right", "center", "left", "center" }'
+                        Data='allAssociatedDebts'
+                        AllData='allAvailableDebts'
+                        CurrentlySelected='GetCurrentlySelectedDebtIndices()'
+                        OnSelectionChanged='OnDebtsSelectionChanged'
+                    />
+                </div>
+                <div style="margin-left: 30px;">
+                    <LinkTable 
+                        Title="Associated Income"
+                        DataType="incomes"
+                        Width="664px"
+                        Headers='new List<string> { "Annual", "Monthly", "Category", "Report Description", "As Of" }'
+                        ColumnWidths='new List<int> { 100, 100, 120, 250, 94 }'
+                        ColumnAlignments='new List<string> { "right", "right", "left", "left", "center" }'
+                        Data='allAssociatedIncomes'
+                        AllData='allAvailableIncomes'
+                        CurrentlySelected='GetCurrentlySelectedIncomeIndices()'
+                        OnSelectionChanged='OnIncomesSelectionChanged'
+                    />
+                </div>
+                <div style="margin-left: 30px;">
+                    <LinkTable 
+                        Title="Associated Insurance"
+                        DataType="insurances"
+                        Width="664px"
+                        Headers='new List<string> { "Own", "Value", "Category", "Report Description", "As Of" }'
+                        ColumnWidths='new List<int> { 100, 100, 120, 250, 94 }'
+                        ColumnAlignments='new List<string> { "right", "right", "left", "left", "center" }'
+                        Data='allAssociatedInsurances'
+                        AllData='allAvailableInsurances'
+                        CurrentlySelected='GetCurrentlySelectedInsuranceIndices()'
+                        OnSelectionChanged='OnInsurancesSelectionChanged'
+                    />
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Investment> investments = new();
+    private Investment? selectedInvestment;
+    private List<string> timeframeOptions = new() { "NOW", "PAST", "FUTR" };
+    private List<string> ownerOptions = new() { "JT", "C1", "C2", "TR", "LLC", "??" };
+    private List<string> categoryOptions = new() 
+    { 
+        "401K", 
+        "403B",
+        "IRA",
+        "Roth IRA",
+        "Brokerage",
+        "CD",
+        "Bond",
+        "Mutual Fund",
+        "ETF",
+        "Stock",
+        "Crypto",
+        "Other"
+    };
+    private string componentKey = Guid.NewGuid().ToString();
+    
+    // Sum total breakdown values
+    private decimal? preTaxDecimal = 1000000;
+    private decimal? rothDecimal = 300000;
+    private decimal? afterTaxDecimal = 200000;
+    private decimal? taxPaidDecimal = 50000;
+    
+    private decimal sumTotal => CalculateSumTotal();
+
+    // Data sources for LinkTable components
+    private List<List<string>> allAssociatedDebts = new();
+    private List<List<string>> allAssociatedIncomes = new();
+    private List<List<string>> allAssociatedInsurances = new();
+    
+    // All available data for selection
+    private List<List<string>> allAvailableDebts = new();
+    private List<List<string>> allAvailableIncomes = new();
+    private List<List<string>> allAvailableInsurances = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        investments = await InvestmentService.GetInvestmentsAsync();
+        selectedInvestment = investments.FirstOrDefault();
+        
+        // Initialize data from database services for LinkTable components
+        var debts = await DebtService.GetDebtsAsync();
+        var assets = await AssetService.GetAssetsAsync();
+        var savings = await SavingsService.GetSavingsAsync();
+        
+        // All available debts (for selection modal)
+        allAvailableDebts = debts.Select(d => new List<string> 
+        { 
+            d.Balance?.ToString("N0") ?? "0", 
+            d.PaymentMade?.ToString("N0") ?? "0", 
+            d.InterestRate ?? "n/a", 
+            d.Term?.ToString() ?? "n/a", 
+            d.ReportDesc ?? "n/a", 
+            d.BalanceDate?.ToString("MM/dd/yy") ?? "n/a" 
+        }).ToList();
+        
+        // All available incomes (using investments and savings as income sources)
+        allAvailableIncomes = investments.Select(i => new List<string> 
+        { 
+            i.CurrentValue?.ToString("N0") ?? "0", 
+            ((i.CurrentValue ?? 0) / 12).ToString("N0"), 
+            i.AccountType ?? "Investment", 
+            i.ReportDesc ?? "n/a", 
+            i.ValueDate?.ToString("MM/dd/yy") ?? "n/a" 
+        }).Concat(savings.Select(s => new List<string> 
+        { 
+            s.Value.ToString("N0"), 
+            (s.Value / 12).ToString("N0"), 
+            s.Category, 
+            s.ReportDesc, 
+            s.ValueDate?.ToString("MM/dd/yy") ?? "n/a" 
+        })).ToList();
+        
+        // All available insurances (using assets as proxy)
+        allAvailableInsurances = assets.Select(a => new List<string> 
+        { 
+            a.Owner ?? "", 
+            a.Value.ToString("N0"), 
+            "Insurance", 
+            a.ReportDesc ?? "", 
+            a.ValueDate?.ToString("MM/dd/yy") ?? "n/a" 
+        }).ToList();
+        
+        // Load associated items for the first investment
+        if (selectedInvestment != null)
+        {
+            LoadAssociatedItemsForInvestment(selectedInvestment);
+        }
+        else
+        {
+            // Initially, no items are associated (empty lists)
+            allAssociatedDebts = new List<List<string>>();
+            allAssociatedIncomes = new List<List<string>>();
+            allAssociatedInsurances = new List<List<string>>();
+        }
+    }
+
+    private void UpdateTimeframe(Investment investment, string value)
+    {
+        investment.Timeframe = value;
+    }
+
+    private void UpdateOwner(Investment investment, string value)
+    {
+        investment.Owner = value;
+    }
+
+    private void UpdateCategory(Investment investment, string value)
+    {
+        investment.Category = value;
+    }
+
+    private void SelectInvestment(Investment investment)
+    {
+        selectedInvestment = investment;
+        
+        // Load associated items for the selected investment
+        LoadAssociatedItemsForInvestment(investment);
+    }
+
+    private void LoadAssociatedItemsForInvestment(Investment investment)
+    {
+        // Load associated debts
+        allAssociatedDebts = investment.AssociatedDebts
+            .Where(index => index < allAvailableDebts.Count)
+            .Select(index => allAvailableDebts[index])
+            .ToList();
+            
+        // Load associated incomes
+        allAssociatedIncomes = investment.AssociatedIncomes
+            .Where(index => index < allAvailableIncomes.Count)
+            .Select(index => allAvailableIncomes[index])
+            .ToList();
+            
+        // Load associated insurances
+        allAssociatedInsurances = investment.AssociatedInsurances
+            .Where(index => index < allAvailableInsurances.Count)
+            .Select(index => allAvailableInsurances[index])
+            .ToList();
+    }
+
+    private string GetGainLossClass(decimal? gainLoss)
+    {
+        if (gainLoss == null) return "";
+        return gainLoss >= 0 ? "gain" : "loss";
+    }
+    
+    private decimal CalculateSumTotal()
+    {
+        var preTax = preTaxDecimal ?? 0;
+        var roth = rothDecimal ?? 0;
+        var afterTax = afterTaxDecimal ?? 0;
+        var taxPaid = taxPaidDecimal ?? 0;
+        
+        return preTax + roth + afterTax - taxPaid;
+    }
+
+    private void OnDebtsSelectionChanged(List<int> selectedIndices)
+    {
+        // Update the associated debts based on selection
+        allAssociatedDebts = selectedIndices
+            .Where(index => index < allAvailableDebts.Count)
+            .Select(index => allAvailableDebts[index])
+            .ToList();
+        
+        // Update the selected investment's associated debts
+        if (selectedInvestment != null)
+        {
+            selectedInvestment.AssociatedDebts = selectedIndices.ToList();
+        }
+        
+        StateHasChanged();
+    }
+
+    private void OnIncomesSelectionChanged(List<int> selectedIndices)
+    {
+        // Update the associated incomes based on selection
+        allAssociatedIncomes = selectedIndices
+            .Where(index => index < allAvailableIncomes.Count)
+            .Select(index => allAvailableIncomes[index])
+            .ToList();
+        
+        // Update the selected investment's associated incomes
+        if (selectedInvestment != null)
+        {
+            selectedInvestment.AssociatedIncomes = selectedIndices.ToList();
+        }
+        
+        StateHasChanged();
+    }
+
+    private void OnInsurancesSelectionChanged(List<int> selectedIndices)
+    {
+        // Update the associated insurances based on selection
+        allAssociatedInsurances = selectedIndices
+            .Where(index => index < allAvailableInsurances.Count)
+            .Select(index => allAvailableInsurances[index])
+            .ToList();
+        
+        // Update the selected investment's associated insurances
+        if (selectedInvestment != null)
+        {
+            selectedInvestment.AssociatedInsurances = selectedIndices.ToList();
+        }
+        
+        StateHasChanged();
+    }
+
+    private List<int> GetCurrentlySelectedDebtIndices()
+    {
+        if (selectedInvestment == null) return new List<int>();
+        
+        var indices = new List<int>();
+        foreach (var debtIndex in selectedInvestment.AssociatedDebts)
+        {
+            if (debtIndex < allAvailableDebts.Count)
+            {
+                indices.Add(debtIndex);
+            }
+        }
+        return indices;
+    }
+
+    private List<int> GetCurrentlySelectedIncomeIndices()
+    {
+        if (selectedInvestment == null) return new List<int>();
+        
+        var indices = new List<int>();
+        foreach (var incomeIndex in selectedInvestment.AssociatedIncomes)
+        {
+            if (incomeIndex < allAvailableIncomes.Count)
+            {
+                indices.Add(incomeIndex);
+            }
+        }
+        return indices;
+    }
+
+    private List<int> GetCurrentlySelectedInsuranceIndices()
+    {
+        if (selectedInvestment == null) return new List<int>();
+        
+        var indices = new List<int>();
+        foreach (var insuranceIndex in selectedInvestment.AssociatedInsurances)
+        {
+            if (insuranceIndex < allAvailableInsurances.Count)
+            {
+                indices.Add(insuranceIndex);
+            }
+        }
+        return indices;
+    }
+
+    public void Dispose()
+    {
+        // Cleanup if needed
+    }
+}

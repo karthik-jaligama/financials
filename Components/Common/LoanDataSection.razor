@@ -1,0 +1,333 @@
+@using Financials.Data
+@inject IJSRuntime JSRuntime
+
+<div class="loan-data-section">
+    <div class="loan-grid-table">
+        <div class="loan-details">
+            <div class="header loan-details-header">Loan Details</div>
+            <div class="label">Orig Loan Date</div>
+            <div class="label">Orig Loan Amt</div>
+            <div class="label">Borrow Limit</div>
+            <div class="label">Prin & Interest</div>
+            <div class="label">Escrow</div>
+        </div>
+        <div></div>
+        <div class="amount">
+            <div class="header amount-header">Amount</div>
+            <div class="value date-field loan-date-value"><input type="date" value="@(Debt?.OriginalLoanDate?.ToString("yyyy-MM-dd") ?? "")" @onblur="HandleBlur" /></div>
+            <div class="value loan-amount-value"><input type="text" class="number-input" @ref="originalLoanAmountInput" value="@FormatNumber(Debt?.OriginalLoanAmount ?? 0)" @oninput="HandleNumberInput" @onblur="HandleBlur" /></div>
+            <div class="value borrow-limit-value"><input type="text" class="number-input" @ref="borrowLimitInput" value="@FormatNumber(Debt?.BorrowLimit ?? 0)" @oninput="HandleNumberInput" @onblur="HandleBlur" /></div>
+            <div class="value balance-value"><input type="text" class="number-input" @ref="balanceInput" value="@FormatNumber(Debt?.Balance ?? 0)" @oninput="HandleNumberInput" @onblur="HandleBlur" /></div>
+            <div class="value escrow-value"><input type="text" class="number-input" @ref="escrowPaymentInput" value="@FormatNumber(Debt?.EscrowPayment ?? 0)" @oninput="HandleNumberInput" @onblur="HandleBlur" /></div>
+        </div>
+        <div></div>
+        <div class="lender-information">
+            <div class="header lender-information-header">Lender Information</div>
+            <div class="lender-information-grid-table">
+                <div class="lender-labels">
+                    <div class="label">Loan #</div>
+                    <div class="label">Loan Rep</div>
+                    <div class="label">Phone #</div>
+                    <div class="label">Lender</div>
+                    <div class="label">As of Date</div>
+                </div>
+                <div></div>
+                <div class="lender-values">
+                    <div class="value loan-number-value"><input type="text" value="@(Debt?.LoanNumber ?? "")" /></div>
+                    <div class="value loan-rep-value"><input type="text" value="@(Debt?.LoanRepresentative ?? "")" /></div>
+                    <div class="phone-number-table">
+                        <div class="value lender-phone-value"><input type="text" value="@(Debt?.LenderPhone ?? "")" /></div>
+                        <div></div>
+                        <div class="label">Ext:</div>
+                        <div></div>
+                        <div class="value phone-ext-value"><input type="text" value="@(Debt?.LenderPhoneExt ?? "")" /></div>
+                    </div>
+                    <div class="value lender-name-value"><input type="text" value="@(Debt?.LenderName ?? "")" /></div>
+                    <div class="value date-field escrow-date-value"><input type="date" value="@(Debt?.EscrowPaymentDate?.ToString("yyyy-MM-dd") ?? "")" /></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.loan-data-section {
+    width: 575px;
+    height: 187px;
+    flex-shrink: 0;
+    border-radius: 5px;
+    border: 0.5px solid #4C4C4F;
+    background: #FFF;
+    margin-left: 30px;
+}
+
+.loan-grid-table {
+    display: grid;
+    padding: 18.5px 20px 20px 20px;
+    grid-template-columns: 117px 20px 100px 0px 1fr;
+    gap: 0px;
+}
+
+.lender-information-grid-table {
+    display: grid;
+    grid-template-columns: 84px 15px 1fr;
+    gap: 0px;
+}
+
+.loan-details .header,
+.amount .header,
+.lender-information .header {
+  margin-bottom: 6.5px;
+}
+
+.loan-details .header {
+  text-align: right;
+}
+
+.loan-details div,
+.amount div,
+.lender-information div {
+  margin-bottom: 4px;
+}
+
+.loan-details div:last-child,
+.amount div:last-child,
+.lender-information div:last-child {
+  margin-bottom: 0;
+}
+
+.phone-number-table div {
+    margin-bottom: 0px;
+}
+
+.phone-number-table {
+    display: grid;
+    grid-template-columns: 125px 10px 30px 6px 35px;
+    gap: 0px;
+}
+
+.header {
+    color: #093B5D;
+    text-align: left;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+.loan-details-header {
+    text-align: right;
+}
+
+.lender-information-header {
+    margin-left: 37px;
+}
+
+.label {
+    color: #000;
+    text-align: right;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+.value {
+    color: #0775C4;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+input,
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+    color: #0775C4;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    width: 100%;
+    transition: background-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+input:focus {
+    color: #055a9e;
+    background-color: rgba(7, 117, 196, 0.05);
+}
+
+input[type="date"] {
+    color: #0775C4;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20.8px;
+    letter-spacing: 0.24px;
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none;
+    width: 120px;
+    transition: background-color 0.2s ease;
+    box-sizing: border-box;
+    cursor: pointer;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.date-field {
+    height: 20.8px;
+}
+
+/* Remove calendar icon in Chrome, Safari, Edge */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+/* Remove calendar icon in Firefox */
+input[type="date"]::-moz-calendar-picker-indicator {
+    display: none;
+}
+
+/* Remove calendar icon in old Edge/IE */
+input[type="date"]::-ms-clear,
+input[type="date"]::-ms-expand {
+    display: none;
+}
+
+/* Remove extra space in Firefox */
+input[type="date"]::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+/* Remove extra space in Chrome/Safari */
+input[type="date"]::-webkit-input-placeholder {
+    color: #0775C4;
+    opacity: 0.6;
+}
+
+/* Remove spinner buttons from number inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.date-field input[type="date"] {
+    width: 120px;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+}
+</style>
+
+@code {
+    [Parameter]
+    public Debt? Debt { get; set; }
+
+    private ElementReference originalLoanAmountInput;
+    private ElementReference borrowLimitInput;
+    private ElementReference balanceInput;
+    private ElementReference escrowPaymentInput;
+
+    private string FormatNumber(decimal value)
+    {
+        // If the decimal part is zero, format without decimals
+        if (value % 1 == 0)
+        {
+            return value.ToString("N0");
+        }
+        return value.ToString("N2");
+    }
+
+    private async Task HandleNumberInput(ChangeEventArgs e)
+    {
+        if (e.Value == null) return;
+        
+        string input = e.Value.ToString() ?? "";
+        
+        // Special handling for decimal input
+        if (input.EndsWith("."))
+        {
+            await JSRuntime.InvokeVoidAsync("formatNumberInput", input);
+            return;
+        }
+
+        // If we're in the middle of typing a decimal number, don't format yet
+        if (input.Contains(".") && !input.EndsWith("."))
+        {
+            string[] parts = input.Split('.');
+            if (parts.Length == 2 && parts[1].Length < 2)
+            {
+                await JSRuntime.InvokeVoidAsync("formatNumberInput", input);
+                return;
+            }
+        }
+        
+        // Remove any non-numeric characters except decimal point
+        string numericOnly = new string(input.Where(c => char.IsDigit(c) || c == '.').ToArray());
+        
+        if (decimal.TryParse(numericOnly, out decimal result))
+        {
+            // Format the number with commas and 2 decimal places only if needed
+            string formatted = FormatNumber(result);
+            
+            // Update the input value using JS interop
+            await JSRuntime.InvokeVoidAsync("formatNumberInput", formatted);
+        }
+    }
+
+    private async Task HandleBlur(FocusEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("handleInputBlur");
+    }
+}
+
+<script>
+    window.formatNumberInput = (value) => {
+        const activeElement = document.activeElement;
+        if (activeElement && activeElement.classList.contains('number-input')) {
+            activeElement.value = value;
+        }
+    };
+
+    window.handleInputBlur = () => {
+        const activeElement = document.activeElement;
+        if (activeElement && activeElement.classList.contains('number-input')) {
+            // Set cursor to start of input
+            activeElement.setSelectionRange(0, 0);
+            
+            // If the value ends with a decimal point, remove it
+            if (activeElement.value.endsWith('.')) {
+                activeElement.value = activeElement.value.slice(0, -1);
+            }
+        }
+    };
+</script>

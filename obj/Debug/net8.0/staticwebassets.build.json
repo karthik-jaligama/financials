@@ -1,0 +1,1155 @@
+{
+  "Version": 1,
+  "Hash": "oDyaCs6E4upeZJhcIXefSF8xMT9NXACXZugmHnNJ9oo=",
+  "Source": "Financials",
+  "BasePath": "_content/Financials",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "Financials\\wwwroot",
+      "Source": "Financials",
+      "ContentRoot": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\",
+      "BasePath": "_content/Financials",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\app.css",
+      "SourceId": "Financials",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\",
+      "BasePath": "_content/Financials",
+      "RelativePath": "app#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "wjcqg44atm",
+      "Integrity": "DCLnOnsq4E5D79UZLCITYCy7BVTANX/Xp4O2y+HhPD8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\app.css"
+    },
+    {
+      "Identity": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\assets-table.css",
+      "SourceId": "Financials",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\",
+      "BasePath": "_content/Financials",
+      "RelativePath": "assets-table#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "k9alv74dbo",
+      "Integrity": "yF1bJkGC06adohSGX7phRknZDW7N3XV4okVoJWwF1wM=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\assets-table.css"
+    },
+    {
+      "Identity": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\debts-table.css",
+      "SourceId": "Financials",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\",
+      "BasePath": "_content/Financials",
+      "RelativePath": "debts-table#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "98va6z3mor",
+      "Integrity": "Z2FPy43pVfrlXeS8bh9XkOqfVGFVUJVnEntv7DIx/hw=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\debts-table.css"
+    },
+    {
+      "Identity": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\file-dropzone.css",
+      "SourceId": "Financials",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\",
+      "BasePath": "_content/Financials",
+      "RelativePath": "file-dropzone#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "e0euvphir7",
+      "Integrity": "brUx46JmcyJdhr5b63IGxym/7cn2njF3NUgSIstKLV8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\file-dropzone.css"
+    },
+    {
+      "Identity": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\file-item.css",
+      "SourceId": "Financials",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\",
+      "BasePath": "_content/Financials",
+      "RelativePath": "file-item#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "r56gijjgm6",
+      "Integrity": "LzFjjL9rubtgG/EM0TJ/anuym+GEtayyBaI8r46N98c=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\file-item.css"
+    },
+    {
+      "Identity": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\investments-table.css",
+      "SourceId": "Financials",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\",
+      "BasePath": "_content/Financials",
+      "RelativePath": "investments-table#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "qart3ysdib",
+      "Integrity": "jiX3FBw7b6SUBczXQYqkEdunz/pw+o+pRDmbRPNrqlA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\investments-table.css"
+    },
+    {
+      "Identity": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\js\\databaseInit.js",
+      "SourceId": "Financials",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\",
+      "BasePath": "_content/Financials",
+      "RelativePath": "js/databaseInit#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "rjrq1ilkmz",
+      "Integrity": "94aXZ4mg6WoKjpc/FqGy//90Q8LHJ3Vyd5Z+t0LUjxo=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\databaseInit.js"
+    },
+    {
+      "Identity": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\js\\fileManager.js",
+      "SourceId": "Financials",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\",
+      "BasePath": "_content/Financials",
+      "RelativePath": "js/fileManager#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "7ry3kt8l9x",
+      "Integrity": "TUVHE2kx0oWtcaP5QOiZafMEmhdgncsOmFIKTUVUD6w=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\fileManager.js"
+    },
+    {
+      "Identity": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\main-layout.css",
+      "SourceId": "Financials",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\",
+      "BasePath": "_content/Financials",
+      "RelativePath": "main-layout#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "f691sguec7",
+      "Integrity": "tyC85igbfPFFhsuYhMPIsj4ducSWHyuABXD5WSVMjis=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\main-layout.css"
+    },
+    {
+      "Identity": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\related-files.css",
+      "SourceId": "Financials",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\",
+      "BasePath": "_content/Financials",
+      "RelativePath": "related-files#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ylvx6vxdbt",
+      "Integrity": "uu+q3BxwR4rPeX0GniShd+1KuOL5vRppPqb2fMzXnb0=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\related-files.css"
+    },
+    {
+      "Identity": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\savings-table.css",
+      "SourceId": "Financials",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\",
+      "BasePath": "_content/Financials",
+      "RelativePath": "savings-table#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "joy4ftbd8p",
+      "Integrity": "bYT8qAWNGCKnPYLML0Yr4pxRdauuXeB1OIMd1B9RQAI=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\savings-table.css"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "app.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\app.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2340"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DCLnOnsq4E5D79UZLCITYCy7BVTANX/Xp4O2y+HhPD8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 13:51:19 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-DCLnOnsq4E5D79UZLCITYCy7BVTANX/Xp4O2y+HhPD8="
+        }
+      ]
+    },
+    {
+      "Route": "app.wjcqg44atm.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\app.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2340"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DCLnOnsq4E5D79UZLCITYCy7BVTANX/Xp4O2y+HhPD8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 13:51:19 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "wjcqg44atm"
+        },
+        {
+          "Name": "label",
+          "Value": "app.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-DCLnOnsq4E5D79UZLCITYCy7BVTANX/Xp4O2y+HhPD8="
+        }
+      ]
+    },
+    {
+      "Route": "assets-table.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\assets-table.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5621"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"yF1bJkGC06adohSGX7phRknZDW7N3XV4okVoJWwF1wM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 16:05:25 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-yF1bJkGC06adohSGX7phRknZDW7N3XV4okVoJWwF1wM="
+        }
+      ]
+    },
+    {
+      "Route": "assets-table.k9alv74dbo.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\assets-table.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5621"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"yF1bJkGC06adohSGX7phRknZDW7N3XV4okVoJWwF1wM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 16:05:25 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "k9alv74dbo"
+        },
+        {
+          "Name": "label",
+          "Value": "assets-table.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-yF1bJkGC06adohSGX7phRknZDW7N3XV4okVoJWwF1wM="
+        }
+      ]
+    },
+    {
+      "Route": "debts-table.98va6z3mor.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\debts-table.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6256"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Z2FPy43pVfrlXeS8bh9XkOqfVGFVUJVnEntv7DIx/hw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 14:37:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "98va6z3mor"
+        },
+        {
+          "Name": "label",
+          "Value": "debts-table.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Z2FPy43pVfrlXeS8bh9XkOqfVGFVUJVnEntv7DIx/hw="
+        }
+      ]
+    },
+    {
+      "Route": "debts-table.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\debts-table.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6256"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Z2FPy43pVfrlXeS8bh9XkOqfVGFVUJVnEntv7DIx/hw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 14:37:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Z2FPy43pVfrlXeS8bh9XkOqfVGFVUJVnEntv7DIx/hw="
+        }
+      ]
+    },
+    {
+      "Route": "file-dropzone.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\file-dropzone.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "910"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"brUx46JmcyJdhr5b63IGxym/7cn2njF3NUgSIstKLV8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 13:37:37 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-brUx46JmcyJdhr5b63IGxym/7cn2njF3NUgSIstKLV8="
+        }
+      ]
+    },
+    {
+      "Route": "file-dropzone.e0euvphir7.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\file-dropzone.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "910"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"brUx46JmcyJdhr5b63IGxym/7cn2njF3NUgSIstKLV8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 13:37:37 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "e0euvphir7"
+        },
+        {
+          "Name": "label",
+          "Value": "file-dropzone.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-brUx46JmcyJdhr5b63IGxym/7cn2njF3NUgSIstKLV8="
+        }
+      ]
+    },
+    {
+      "Route": "file-item.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\file-item.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2126"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"LzFjjL9rubtgG/EM0TJ/anuym+GEtayyBaI8r46N98c=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 04:36:23 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-LzFjjL9rubtgG/EM0TJ/anuym+GEtayyBaI8r46N98c="
+        }
+      ]
+    },
+    {
+      "Route": "file-item.r56gijjgm6.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\file-item.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2126"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"LzFjjL9rubtgG/EM0TJ/anuym+GEtayyBaI8r46N98c=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 04:36:23 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "r56gijjgm6"
+        },
+        {
+          "Name": "label",
+          "Value": "file-item.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-LzFjjL9rubtgG/EM0TJ/anuym+GEtayyBaI8r46N98c="
+        }
+      ]
+    },
+    {
+      "Route": "investments-table.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\investments-table.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10563"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"jiX3FBw7b6SUBczXQYqkEdunz/pw+o+pRDmbRPNrqlA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 14:37:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-jiX3FBw7b6SUBczXQYqkEdunz/pw+o+pRDmbRPNrqlA="
+        }
+      ]
+    },
+    {
+      "Route": "investments-table.qart3ysdib.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\investments-table.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10563"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"jiX3FBw7b6SUBczXQYqkEdunz/pw+o+pRDmbRPNrqlA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 14:37:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "qart3ysdib"
+        },
+        {
+          "Name": "label",
+          "Value": "investments-table.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-jiX3FBw7b6SUBczXQYqkEdunz/pw+o+pRDmbRPNrqlA="
+        }
+      ]
+    },
+    {
+      "Route": "js/databaseInit.js",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\js\\databaseInit.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8959"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"94aXZ4mg6WoKjpc/FqGy//90Q8LHJ3Vyd5Z+t0LUjxo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 18:46:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-94aXZ4mg6WoKjpc/FqGy//90Q8LHJ3Vyd5Z+t0LUjxo="
+        }
+      ]
+    },
+    {
+      "Route": "js/databaseInit.rjrq1ilkmz.js",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\js\\databaseInit.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8959"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"94aXZ4mg6WoKjpc/FqGy//90Q8LHJ3Vyd5Z+t0LUjxo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 18:46:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "rjrq1ilkmz"
+        },
+        {
+          "Name": "label",
+          "Value": "js/databaseInit.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-94aXZ4mg6WoKjpc/FqGy//90Q8LHJ3Vyd5Z+t0LUjxo="
+        }
+      ]
+    },
+    {
+      "Route": "js/fileManager.7ry3kt8l9x.js",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\js\\fileManager.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3034"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"TUVHE2kx0oWtcaP5QOiZafMEmhdgncsOmFIKTUVUD6w=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 04:46:33 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "7ry3kt8l9x"
+        },
+        {
+          "Name": "label",
+          "Value": "js/fileManager.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-TUVHE2kx0oWtcaP5QOiZafMEmhdgncsOmFIKTUVUD6w="
+        }
+      ]
+    },
+    {
+      "Route": "js/fileManager.js",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\js\\fileManager.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3034"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"TUVHE2kx0oWtcaP5QOiZafMEmhdgncsOmFIKTUVUD6w=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 04:46:33 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-TUVHE2kx0oWtcaP5QOiZafMEmhdgncsOmFIKTUVUD6w="
+        }
+      ]
+    },
+    {
+      "Route": "main-layout.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\main-layout.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "374"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"tyC85igbfPFFhsuYhMPIsj4ducSWHyuABXD5WSVMjis=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 13:38:05 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-tyC85igbfPFFhsuYhMPIsj4ducSWHyuABXD5WSVMjis="
+        }
+      ]
+    },
+    {
+      "Route": "main-layout.f691sguec7.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\main-layout.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "374"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"tyC85igbfPFFhsuYhMPIsj4ducSWHyuABXD5WSVMjis=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 13:38:05 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "f691sguec7"
+        },
+        {
+          "Name": "label",
+          "Value": "main-layout.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-tyC85igbfPFFhsuYhMPIsj4ducSWHyuABXD5WSVMjis="
+        }
+      ]
+    },
+    {
+      "Route": "related-files.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\related-files.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "756"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"uu+q3BxwR4rPeX0GniShd+1KuOL5vRppPqb2fMzXnb0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 04:36:23 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-uu+q3BxwR4rPeX0GniShd+1KuOL5vRppPqb2fMzXnb0="
+        }
+      ]
+    },
+    {
+      "Route": "related-files.ylvx6vxdbt.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\related-files.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "756"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"uu+q3BxwR4rPeX0GniShd+1KuOL5vRppPqb2fMzXnb0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 04:36:23 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ylvx6vxdbt"
+        },
+        {
+          "Name": "label",
+          "Value": "related-files.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-uu+q3BxwR4rPeX0GniShd+1KuOL5vRppPqb2fMzXnb0="
+        }
+      ]
+    },
+    {
+      "Route": "savings-table.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\savings-table.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5495"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bYT8qAWNGCKnPYLML0Yr4pxRdauuXeB1OIMd1B9RQAI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 16:05:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-bYT8qAWNGCKnPYLML0Yr4pxRdauuXeB1OIMd1B9RQAI="
+        }
+      ]
+    },
+    {
+      "Route": "savings-table.joy4ftbd8p.css",
+      "AssetFile": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\savings-table.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5495"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bYT8qAWNGCKnPYLML0Yr4pxRdauuXeB1OIMd1B9RQAI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 06 Oct 2025 16:05:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "joy4ftbd8p"
+        },
+        {
+          "Name": "label",
+          "Value": "savings-table.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-bYT8qAWNGCKnPYLML0Yr4pxRdauuXeB1OIMd1B9RQAI="
+        }
+      ]
+    }
+  ]
+}

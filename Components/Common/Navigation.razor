@@ -1,0 +1,75 @@
+@using Microsoft.AspNetCore.Components.Routing
+
+<nav class="navigation">
+    <div class="nav-container" style="margin-bottom: 100px;">
+        <div class="nav-brand">
+            <h2>Financials</h2>
+        </div>
+        <div class="nav-links">
+            <NavLink href="/home" class="nav-link">Home</NavLink>
+            <NavLink href="/assets" class="nav-link">Assets</NavLink>
+            <NavLink href="/debts" class="nav-link">Debts</NavLink>
+            <NavLink href="/investments" class="nav-link">Investments</NavLink>
+            <NavLink href="/savings" class="nav-link">Savings</NavLink>
+            <NavLink href="/file-manager" class="nav-link">File Manager</NavLink>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .navigation {
+        background: #0C3B5D;
+        color: white;
+        padding: 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        height: 60px;
+    }
+
+    .nav-brand h2 {
+        margin: 0;
+        font-family: Inter, sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        color: white;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 30px;
+    }
+
+    .nav-link {
+        color: white;
+        text-decoration: none;
+        font-family: Inter, sans-serif;
+        font-size: 16px;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+    }
+
+    .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        text-decoration: none;
+        color: white;
+    }
+
+    .nav-link.active {
+        background-color: #4DB848;
+        color: white;
+        font-weight: 700;
+    }
+</style>

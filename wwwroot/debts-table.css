@@ -1,0 +1,332 @@
+.debts-container {
+    width: 1520px;
+    height: 1013px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-radius: 10px;
+    background: #FFF;
+    box-shadow: 2px 40px 100px 30px rgba(0, 0, 0, 0.40);
+    overflow: hidden;
+}
+
+/* Header Styles */
+.debts-container > .header {
+    width: 1520px;
+    height: 52px;
+    flex-shrink: 0;
+    border-radius: 10px 10px 0px 0px;
+    background: #0C3B5D;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    justify-content: space-between;
+}
+
+.debts-container > .header > .header-content {
+    width: 885px;
+    display: flex;
+    align-items: center;
+}
+
+.header-item {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    box-sizing: border-box;
+    color: #FFF;
+    font-family: Inter;
+    font-size: 16px;
+    font-weight: 700;
+    background: #0C3B5D;
+    border: none;
+}
+
+/* Content Area */
+.content-container {
+    display: flex;
+    flex-direction: row;
+    height: calc(1013px - 52px);
+    width: 1520px;
+    min-width: 1520px;
+}
+
+.debts-table {
+    width: 885px;
+    min-width: 885px;
+    background: white;
+    flex: 0 0 885px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Table Rows and Cells */
+.debt-row {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    border-bottom: 0.5px solid #8C959E;
+    background: white;
+    cursor: pointer;
+}
+
+.debt-row.selected, 
+.debt-row.selected .cell {
+    background: #FAF8F5;
+}
+
+.cell {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    border: 0.5px solid rgba(25, 42, 61, 0.50);
+    margin: 0;
+    box-sizing: border-box;
+    background: white;
+    font-family: Inter;
+    font-size: 16px;
+}
+
+/* Column Specific Styles */
+.header-item.time, .cell.time {
+    width: 80px;
+    padding: 0px 10px;
+    justify-content: space-between;
+}
+
+.header-item.owner, .cell.owner {
+    width: 68px;
+    padding: 0px 10px;
+    justify-content: center;
+}
+
+.header-item.balance, .cell.balance {
+    width: 100px;
+    padding: 0px 10px;
+    justify-content: flex-end;
+}
+
+.header-item.pmt-made, .cell.pmt-made {
+    width: 95px;
+    padding: 0px 5px;
+    justify-content: center;
+}
+
+.header-item.rate, .cell.rate {
+    width: 80px;
+    padding: 0px 10px;
+    justify-content: center;
+}
+
+.header-item.term, .cell.term {
+    width: 95px;
+    padding: 0px 10px;
+    justify-content: center;
+}
+
+.header-item.cat, .cell.cat {
+    width: 63px;
+    padding: 0px 10px;
+    justify-content: center;
+}
+
+.header-item.report-description, .cell.report-description {
+    width: 210px;
+    padding: 0px 10px;
+    justify-content: flex-start;
+}
+
+.header-item.as-of, .cell.as-of {
+    width: 94px;
+    padding: 0px 10px;
+    justify-content: center;
+}
+
+.scrollable-section {
+    width: 635px;
+    min-width: 635px;
+    height: 100%;
+    flex: 0 0 635px;
+    background: #FAF8F5;
+    overflow-y: auto;
+    -ms-overflow-style: none;  /* Internet Explorer and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.scrollable-section::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Totals Row Styling */
+.totals-row {
+    margin-top: auto;
+    padding: 10px 20px;
+    background: white;
+    border-top: 0.25px solid rgba(25, 42, 61, 0.50);
+    border-radius: 0 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.totals-item {
+    color: #000;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+.totals-item.total-debt {
+    font-weight: 600;
+}
+
+.debt-details {
+    padding: 20px;
+}
+
+.notes {
+    font-size: 14px;
+    color: #666;
+}
+
+.select-asset {
+    color: #FFF;
+    font-family: Inter;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 130%;
+    letter-spacing: 0.27px;
+    display: flex;
+    width: 635px;
+    height: 36px;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* Add style for custom dropdown */
+::deep .custom-dropdown {
+    font-size: 16px;
+    font-family: Inter;
+}
+
+/* Make sure all text in cells is 16px */
+.cell > * {
+    font-size: 16px;
+}
+
+.section-header {
+    color: #093B5D;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+.standard-text {
+    color: #000;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+.adjustable-header-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.vertical-selector {
+    display: flex;
+    flex-direction: column;
+    background: #4DB848;
+    border-radius: 6px 0 0 6px;
+    overflow: hidden;
+    min-width: 70px;
+    align-items: stretch;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+    margin-right: 0px;
+}
+
+.vertical-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background: #4DB848;
+    padding: 0;
+}
+
+.vertical-arrow {
+    color: #fff;
+    font-size: 18px;
+    padding: 0 4px;
+    align-self: flex-start;
+}
+
+.vertical-labels {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+.vertical-label {
+    color: #fff;
+    font-family: Inter, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    text-align: center;
+    margin: 0 0 4px 0;
+    letter-spacing: 0.5px;
+}
+
+.vertical-checkbox-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background: #4DB848;
+    padding: 2px 0;
+}
+
+.vertical-checkbox-row input[type="checkbox"] {
+    width: 28px;
+    height: 28px;
+    margin: 2px 4px;
+    accent-color: #fff;
+    border: 2px solid #093B5D;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.horizontal-selector {
+    position: absolute;
+    top: 0;
+    left: -150px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    background: #4DB848;
+    border-radius: 6px 0 0 6px;
+    overflow: hidden;
+    min-width: 140px;
+    width: fit-content;
+    margin-right: 0px;
+    margin-bottom: 10px;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+}

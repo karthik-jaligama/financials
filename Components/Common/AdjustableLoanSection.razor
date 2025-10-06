@@ -1,0 +1,126 @@
+@using Financials.Data
+
+<div class="adjustable-loan-section">
+    <div class="adjustable-loan-grid-table">
+        <div class="adjustable-loan-details">
+            <div class="header adjustable-loan-header">Adjustable Loans</div>
+            <div class="label">Future Adj. Date</div>
+            <div class="label">Rate Tied To</div>
+            <div class="label">Spread</div>
+            <div class="label">Current Rate</div>
+            <div class="label">Interest Only?</div>
+        </div>
+        <div></div>
+        <div class="details">
+            <div class="header details-header">Details</div>
+            <div class="value future-adj-date-value">@(Debt?.FutureAdjustDate?.ToString("MM/dd/yy") ?? "n/a")</div>
+            <div class="value rate-tied-to-value">@(Debt?.RateTiedTo ?? "n/a")</div>
+            <div class="value spread-value">@(Debt?.Spread?.ToString("N0") ?? "n/a")</div>
+            <div class="value current-rate-value">@(Debt?.AdjustableRate?.ToString("N0") ?? "n/a")</div>
+            <div class="value interest-only-value">@(Debt?.IsInterestOnly == true ? "Yes" : "No")</div>
+        </div>
+        <div></div>
+        <div class="future-assumptions">
+            <div class="header future-assumptions-header">Future Assumptions</div>
+            <div class="future-assumptions-grid-table">
+                <div class="future-assumptions-labels">
+                    <div class="label">Future Rate</div>
+                    <div class="label">Min Fut Pmt</div>
+                    <div class="label">Pmt Made</div>
+                    <div class="label">Balloon Pmt?</div>
+                </div>
+                <div></div>
+                <div class="lender-values">
+                    <div class="value future-rate-value">@(Debt?.FutureAdjustRate?.ToString("N0") ?? "n/a")</div>
+                    <div class="value min-fut-pmt-value">@(Debt?.MinimumPayment?.ToString("N0") ?? "n/a")</div>
+                    <div class="value pmt-made-value">@(Debt?.FuturePaymentMade?.ToString("N0") ?? "n/a")</div>
+                    <div class="value balloon-pmt-value">@(Debt?.HasBalloonPayment == true ? "Yes" : "No")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.adjustable-loan-section {
+    width: 498px;
+    height: 187px;
+    flex-shrink: 0;
+    border-radius: 5px;
+    border: 0.5px solid #4C4C4F;
+    background: #FFF;
+    margin-left: 30px;
+}
+
+.adjustable-loan-grid-table {
+    display: grid;
+    padding: 18.5px 20px 20px 20px;
+    grid-template-columns: 140px 20px 75px 15px 1fr;
+    gap: 0px;
+}
+
+.future-assumptions-grid-table {
+    display: grid;
+    grid-template-columns: 101px 20px 1fr;
+    gap: 0px;
+}
+
+.adjustable-loan-details .header,
+.details .header,
+.future-assumptions .header {
+  margin-bottom: 6.5px;
+}
+
+.adjustable-loan-details div,
+.details div,
+.future-assumptions div {
+  margin-bottom: 4px;
+}
+
+.adjustable-loan-details div:last-child,
+.details div:last-child,
+.future-assumptions div:last-child {
+  margin-bottom: 0;
+}   
+
+.header {
+    color: #093B5D;
+    text-align: left;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+.adjustable-loan-details-header {
+    text-align: right;
+}
+
+.label {
+    color: #000;
+    text-align: right;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+.value {
+    color: #0775C4;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+</style>
+
+@code {
+    [Parameter]
+    public Debt? Debt { get; set; }
+}

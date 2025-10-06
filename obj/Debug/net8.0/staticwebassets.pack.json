@@ -1,0 +1,69 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\assets-table.css",
+      "PackagePath": "staticwebassets\\assets-table.css"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\debts-table.css",
+      "PackagePath": "staticwebassets\\debts-table.css"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\file-dropzone.css",
+      "PackagePath": "staticwebassets\\file-dropzone.css"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\file-item.css",
+      "PackagePath": "staticwebassets\\file-item.css"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\investments-table.css",
+      "PackagePath": "staticwebassets\\investments-table.css"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\js\\databaseInit.js",
+      "PackagePath": "staticwebassets\\js\\databaseInit.js"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\js\\fileManager.js",
+      "PackagePath": "staticwebassets\\js\\fileManager.js"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\main-layout.css",
+      "PackagePath": "staticwebassets\\main-layout.css"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\related-files.css",
+      "PackagePath": "staticwebassets\\related-files.css"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\savings-table.css",
+      "PackagePath": "staticwebassets\\savings-table.css"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Financials.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Financials.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.Financials.props",
+      "PackagePath": "build\\Financials.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.Financials.props",
+      "PackagePath": "buildMultiTargeting\\Financials.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.Financials.props",
+      "PackagePath": "buildTransitive\\Financials.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

@@ -1,0 +1,57 @@
+@page "/file-manager"
+@rendermode InteractiveServer
+@using Financials.Components.Common
+
+<div class="file-manager-page">
+    <div class="container">
+        <div class="max-width-container">
+            <div class="demo-card">
+                <RelatedFiles />
+            </div>
+            
+            <!-- Instructions -->
+            <div class="instructions">
+                <p>This CRM file manager allows you to drag and drop files without downloading them.</p>
+                <p>Files are stored as references and can be opened by double-clicking their icons.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.file-manager-page {
+    min-height: 100vh;
+    background-color: #f9fafb;
+    padding: 2rem 0;
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.max-width-container {
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+.demo-card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    border: 1px solid #e5e7eb;
+    padding: 1.5rem;
+}
+
+.instructions {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.instructions p {
+    margin: 0.25rem 0;
+}
+</style>

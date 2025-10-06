@@ -1,0 +1,299 @@
+@page "/assets"
+@rendermode InteractiveServer
+@using Financials.Data
+@using Financials.Data.Services
+@using Financials.Data.Classes
+@using Financials.Components.Common
+@inject AssetService AssetService
+@inject DebtService DebtService
+@inject InvestmentService InvestmentService
+@inject SavingsService SavingsService
+@implements IDisposable
+
+<link rel="stylesheet" href="/assets-table.css" />
+
+<div class="assets-container">
+    <div class="header">
+        <div class="header-content">
+            <div class="header-item time">Time</div>
+            <div class="header-item owner">Owner</div>
+            <div class="header-item asset-value">Value</div>
+            <div class="header-item category">Category</div>
+            <div class="header-item report-description">Report Description</div>
+            <div class="header-item as-of">As Of</div>
+        </div>
+        <div class="select-asset">Select Asset</div>
+    </div>
+    
+    <div class="content-container">
+        <div class="assets-table">
+            <div class="assets-rows">
+                @foreach (var asset in assets)
+                {
+                    <div class="asset-row @(selectedAsset == asset ? "selected" : "")" 
+                         @onclick="() => SelectAsset(asset)">
+                        <div class="cell time">
+                            <CustomDropdown 
+                                Value="@asset.Timeframe" 
+                                Options="@timeframeOptions" 
+                                ValueChanged="@(v => UpdateTimeframe(asset, v))" />
+                        </div>
+                        <div class="cell owner">
+                            <CustomDropdown 
+                                Value="@asset.Owner" 
+                                Options="@ownerOptions" 
+                                ValueChanged="@(v => UpdateOwner(asset, v))" />
+                        </div>
+                        <div class="cell asset-value">@asset.Value.ToString("N0")</div>
+                        <div class="cell category">
+                            <CustomDropdown 
+                                Value="@asset.Category" 
+                                Options="@categoryOptions" 
+                                ValueChanged="@(v => UpdateCategory(asset, v))" />
+                        </div>
+                        <div class="cell report-description">@asset.ReportDesc</div>
+                        <div class="cell as-of">@(asset.ValueDate?.ToString("MM/dd/yy"))</div>
+                    </div>
+                }
+            </div>
+            <div class="totals-row">
+                <div class="total-item">
+                    <span class="total-label">Total</span>
+                    <span class="total-value">@(assets.Sum(a => a.Value).ToString("N0"))</span>
+                </div>
+                @foreach (var owner in assets.Select(a => a.Owner).Distinct().Where(o => !string.IsNullOrEmpty(o)).OrderBy(o => o))
+                {
+                    <div class="owner-total-item">
+                        <span class="owner-label">@owner)</span>
+                        <span class="owner-value">@(assets.Where(a => a.Owner == owner).Sum(a => a.Value).ToString("N0"))</span>
+                    </div>
+                }
+            </div>
+        </div>
+        
+        <div class="scrollable-section">
+            @if (selectedAsset != null)
+            {
+                <div class="asset-details">
+                    <Notes Note="@selectedAsset.Notes" Width="728px" />
+
+                    <div style="margin: 30px;">
+                        <PurchaseDetailsSection Asset="@selectedAsset" />
+                    </div>
+
+                </div>
+
+                <div style="margin-top: 30px; margin-left: 30px;">
+                    <LinkTable
+                        Title="Associated Loans"
+                        DataType="debts"
+                        Headers='new List<string> { "Balance", "Pmt Made", "Rate", "Term", "Report Description", "As Of" }'
+                        ColumnWidths='new List<int> { 100, 100, 80, 80, 200, 94 }'
+                        ColumnAlignments='new List<string> { "right", "right", "right", "center", "left", "center" }'
+                        Data='allAssociatedDebts'
+                        AllData='allAvailableDebts'
+                        CurrentlySelected='GetCurrentlySelectedDebtIndices()'
+                        OnSelectionChanged='OnDebtsSelectionChanged'
+                        Width="728px"
+                    />
+                </div>
+                <div style="margin-left: 30px;">
+                    <LinkTable
+                        Title="Associated Insurance"
+                        DataType="insurances"
+                        Headers='new List<string> { "Own", "Value", "Category", "Report Description", "As Of" }'
+                        ColumnWidths='new List<int> { 60, 100, 120, 200, 94 }'
+                        ColumnAlignments='new List<string> { "center", "right", "left", "left", "center" }'
+                        Data='allAssociatedInsurances'
+                        AllData='allAvailableInsurances'
+                        CurrentlySelected='GetCurrentlySelectedInsuranceIndices()'
+                        OnSelectionChanged='OnInsurancesSelectionChanged'
+                        Width="728px"
+                    />
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Asset> assets = new();
+    private Asset? selectedAsset;
+    private List<string> timeframeOptions = new() { "NOW", "PAST", "FUTR" };
+    private List<string> ownerOptions = new() { "JT", "C1", "C2", "TR", "LLC", "??" };
+    private List<string> categoryOptions = new() 
+    { 
+        "Real Estate", 
+        "Vehicle", 
+        "Land", 
+        "Collectibles", 
+        "Boat", 
+        "Company", 
+        "Other" 
+    };
+
+    // Data sources for LinkTable components
+    private List<List<string>> allAssociatedDebts = new();
+    private List<List<string>> allAssociatedInsurances = new();
+    
+    // All available data for selection
+    private List<List<string>> allAvailableDebts = new();
+    private List<List<string>> allAvailableInsurances = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        assets = await AssetService.GetAssetsAsync();
+        selectedAsset = assets.FirstOrDefault();
+        
+        // Initialize data from database services for LinkTable components
+        var debts = await DebtService.GetDebtsAsync();
+        var investments = await InvestmentService.GetInvestmentsAsync();
+        var savings = await SavingsService.GetSavingsAsync();
+        
+        // All available debts (for selection modal)
+        allAvailableDebts = debts.Select(d => new List<string> 
+        { 
+            d.Balance?.ToString("N0") ?? "0", 
+            d.PaymentMade?.ToString("N0") ?? "0", 
+            d.InterestRate ?? "n/a", 
+            d.Term?.ToString() ?? "n/a", 
+            d.ReportDesc ?? "n/a", 
+            d.BalanceDate?.ToString("MM/dd/yy") ?? "n/a" 
+        }).ToList();
+        
+        // All available insurances (using assets as proxy)
+        allAvailableInsurances = assets.Select(a => new List<string> 
+        { 
+            a.Owner ?? "", 
+            a.Value.ToString("N0"), 
+            "Insurance", 
+            a.ReportDesc ?? "", 
+            a.ValueDate?.ToString("MM/dd/yy") ?? "n/a" 
+        }).ToList();
+        
+        // Load associated items for the first asset
+        if (selectedAsset != null)
+        {
+            LoadAssociatedItemsForAsset(selectedAsset);
+        }
+        else
+        {
+            // Initially, no items are associated (empty lists)
+            allAssociatedDebts = new List<List<string>>();
+            allAssociatedInsurances = new List<List<string>>();
+        }
+    }
+
+    private async Task UpdateTimeframe(Asset asset, string value)
+    {
+        asset.Timeframe = value;
+        await AssetService.UpdateAssetAsync(asset);
+        StateHasChanged();
+    }
+
+    private async Task UpdateOwner(Asset asset, string value)
+    {
+        asset.Owner = value;
+        await AssetService.UpdateAssetAsync(asset);
+        StateHasChanged();
+    }
+
+    private async Task UpdateCategory(Asset asset, string value)
+    {
+        asset.Category = value;
+        await AssetService.UpdateAssetAsync(asset);
+        StateHasChanged();
+    }
+
+    private void SelectAsset(Asset asset)
+    {
+        selectedAsset = asset;
+        
+        // Load associated items for the selected asset
+        LoadAssociatedItemsForAsset(asset);
+    }
+
+    private void LoadAssociatedItemsForAsset(Asset asset)
+    {
+        // Load associated debts
+        allAssociatedDebts = asset.AssociatedDebts
+            .Where(index => index < allAvailableDebts.Count)
+            .Select(index => allAvailableDebts[index])
+            .ToList();
+            
+        // Load associated insurances
+        allAssociatedInsurances = asset.AssociatedInsurances
+            .Where(index => index < allAvailableInsurances.Count)
+            .Select(index => allAvailableInsurances[index])
+            .ToList();
+    }
+
+    private void OnDebtsSelectionChanged(List<int> selectedIndices)
+    {
+        // Update the associated debts based on selection
+        allAssociatedDebts = selectedIndices
+            .Where(index => index < allAvailableDebts.Count)
+            .Select(index => allAvailableDebts[index])
+            .ToList();
+        
+        // Update the selected asset's associated debts
+        if (selectedAsset != null)
+        {
+            selectedAsset.AssociatedDebts = selectedIndices.ToList();
+        }
+        
+        StateHasChanged();
+    }
+
+    private void OnInsurancesSelectionChanged(List<int> selectedIndices)
+    {
+        // Update the associated insurances based on selection
+        allAssociatedInsurances = selectedIndices
+            .Where(index => index < allAvailableInsurances.Count)
+            .Select(index => allAvailableInsurances[index])
+            .ToList();
+        
+        // Update the selected asset's associated insurances
+        if (selectedAsset != null)
+        {
+            selectedAsset.AssociatedInsurances = selectedIndices.ToList();
+        }
+        
+        StateHasChanged();
+    }
+
+    private List<int> GetCurrentlySelectedDebtIndices()
+    {
+        if (selectedAsset == null) return new List<int>();
+        
+        var indices = new List<int>();
+        foreach (var debtIndex in selectedAsset.AssociatedDebts)
+        {
+            if (debtIndex < allAvailableDebts.Count)
+            {
+                indices.Add(debtIndex);
+            }
+        }
+        return indices;
+    }
+
+    private List<int> GetCurrentlySelectedInsuranceIndices()
+    {
+        if (selectedAsset == null) return new List<int>();
+        
+        var indices = new List<int>();
+        foreach (var insuranceIndex in selectedAsset.AssociatedInsurances)
+        {
+            if (insuranceIndex < allAvailableInsurances.Count)
+            {
+                indices.Add(insuranceIndex);
+            }
+        }
+        return indices;
+    }
+
+    public void Dispose()
+    {
+        // Cleanup if needed
+    }
+} 

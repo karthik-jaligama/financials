@@ -1,0 +1,77 @@
+@using Financials.Data.Classes
+@using Financials.Components.Common
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<div class="related-files-container">
+    <!-- Header -->
+    <div class="files-header">
+        <svg class="folder-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+        <h2 class="files-title">Related Files</h2>
+    </div>
+
+    <!-- Main content area -->
+    <div class="files-content">
+        <!-- Drop Zone -->
+        <div class="drop-zone-section">
+            <FileDropZone OnFilesAdded="HandleFilesAdded" />
+        </div>
+
+        <!-- Files Display -->
+        @if (files.Any())
+        {
+            <div class="files-display">
+                @foreach (var file in files)
+                {
+                    <FileItem File="@file" OnRemove="HandleRemoveFile" />
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Instructions -->
+    @if (files.Any())
+    {
+        <div class="files-instructions">
+            Double-click any file to open it
+        </div>
+    }
+</div>
+
+@code {
+    private List<FileData> files = new();
+
+    private Task HandleFilesAdded(FileData[] newFiles)
+    {
+        foreach (var file in newFiles)
+        {
+            files.Add(file);
+        }
+        
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task HandleRemoveFile(string fileId)
+    {
+        var fileToRemove = files.FirstOrDefault(f => f.Id == fileId);
+        if (fileToRemove != null)
+        {
+            // Clean up the blob URL before removing
+            await JSRuntime.InvokeVoidAsync("revokeBlobUrl", fileToRemove.Url);
+            files.Remove(fileToRemove);
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // Clean up all blob URLs when component is disposed
+        foreach (var file in files)
+        {
+            await JSRuntime.InvokeVoidAsync("revokeBlobUrl", file.Url);
+        }
+    }
+}

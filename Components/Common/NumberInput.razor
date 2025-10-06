@@ -1,0 +1,134 @@
+@using Microsoft.AspNetCore.Components
+@inject IJSRuntime JSRuntime
+
+<input type="text" 
+       class="number-input" 
+       @ref="inputRef"
+       value="@FormattedValue" 
+       @oninput="HandleNumberInput" 
+       @onblur="HandleBlur"
+       @attributes="AdditionalAttributes" />
+
+@code {
+    [Parameter] public decimal? Value { get; set; }
+    [Parameter] public EventCallback<decimal?> ValueChanged { get; set; }
+    [Parameter] public string CssClass { get; set; } = "";
+    [Parameter] public Dictionary<string, object> AdditionalAttributes { get; set; } = new();
+
+    private ElementReference inputRef;
+    private string FormattedValue => FormatNumber(Value ?? 0);
+
+    private string FormatNumber(decimal value)
+    {
+        // If the decimal part is zero, format without decimals
+        if (value % 1 == 0)
+        {
+            return value.ToString("N0");
+        }
+        return value.ToString("N2");
+    }
+
+    private async Task HandleNumberInput(ChangeEventArgs e)
+    {
+        if (e.Value == null) return;
+        
+        string input = e.Value.ToString() ?? "";
+        
+        // Special handling for decimal input
+        if (input.EndsWith("."))
+        {
+            await JSRuntime.InvokeVoidAsync("formatNumberInput", input);
+            return;
+        }
+
+        // If we're in the middle of typing a decimal number, don't format yet
+        if (input.Contains(".") && !input.EndsWith("."))
+        {
+            string[] parts = input.Split('.');
+            if (parts.Length == 2 && parts[1].Length < 2)
+            {
+                await JSRuntime.InvokeVoidAsync("formatNumberInput", input);
+                return;
+            }
+        }
+        
+        // Remove any non-numeric characters except decimal point
+        string numericOnly = new string(input.Where(c => char.IsDigit(c) || c == '.').ToArray());
+        
+        if (decimal.TryParse(numericOnly, out decimal result))
+        {
+            // Format the number with commas and 2 decimal places only if needed
+            string formatted = FormatNumber(result);
+            
+            // Update the input value using JS interop
+            await JSRuntime.InvokeVoidAsync("formatNumberInput", formatted);
+            
+            // Update the bound value
+            await ValueChanged.InvokeAsync(result);
+        }
+    }
+
+    private async Task HandleBlur(FocusEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("handleInputBlur");
+    }
+}
+
+<script>
+    window.formatNumberInput = (value) => {
+        const activeElement = document.activeElement;
+        if (activeElement && activeElement.classList.contains('number-input')) {
+            activeElement.value = value;
+        }
+    };
+
+    window.handleInputBlur = () => {
+        const activeElement = document.activeElement;
+        if (activeElement && activeElement.classList.contains('number-input')) {
+            // Set cursor to start of input
+            activeElement.setSelectionRange(0, 0);
+            
+            // If the value ends with a decimal point, remove it
+            if (activeElement.value.endsWith('.')) {
+                activeElement.value = activeElement.value.slice(0, -1);
+            }
+        }
+    };
+</script>
+
+<style>
+    .number-input {
+        color: #333;
+        font-family: Inter, sans-serif;
+        font-size: 16px;
+        font-weight: 500;
+        background: transparent;
+        border: none;
+        outline: none;
+        padding: 0;
+        margin: 0;
+        box-shadow: none;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        text-align: right;
+    }
+
+    .number-input:focus {
+        color: #333;
+        background: transparent;
+        outline: none;
+    }
+
+    .number-input:focus,
+    .number-input:active,
+    .number-input:hover {
+        outline: none;
+        background: transparent;
+    }
+
+    /* Special styling for tax-paid variant */
+    .number-input.tax-paid {
+        text-align: center;
+    }
+</style>

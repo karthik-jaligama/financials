@@ -1,0 +1,41 @@
+@using Financials.Data
+
+<div class="notes-container" style="width: @Width;">
+    <div class="notes-text">
+        @(string.IsNullOrEmpty(Note) ? "No notes available" : Note)
+    </div>
+</div>
+
+<style>
+.notes-container {
+    width: 575px;
+    height: 136px;
+    padding: 20px;
+    margin: 30px;
+    background: white;
+    border-radius: 5px;
+    border: 0.5px solid #4C4C4F;
+    box-sizing: border-box;
+}
+
+.notes-text {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    font-family: Inter;
+    font-size: 16px;
+    line-height: 24px;
+}
+</style>
+
+@code {
+    [Parameter]
+    public string? Note { get; set; }
+    [Parameter]
+    public string? Width { get; set; }
+} 

@@ -1,0 +1,84 @@
+@using Financials.Data
+
+<div class="address-section">
+    <div class="address-header">
+        <div class="section-header">Address</div>
+        <div class="address-dropdown">
+            <CustomDropdown 
+                Value="" 
+                Options="new List<string>()" 
+                ValueChanged="@(_ => {})" />
+        </div>
+    </div>
+    <div>123 Pleasant St.</div>
+    <div>Apt. #4</div>
+    <div>Fairport, NY 14450</div>
+</div>
+
+<style> 
+.address-section {
+    width: 202px;
+    height: 137px;
+    flex-shrink: 0;
+    border-radius: 5px;
+    border: 0.5px solid #4C4C4F;
+    background: #FFF;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.address-section div {
+    color: #000;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+.address-section .section-header {
+    color: #093B5D;  /* Keep the header blue */
+    font-weight: 700;  /* Keep the header bold */
+}
+
+.address-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.address-dropdown {
+    width: 12px;
+    height: 6px;
+    display: flex;
+    align-items: center;
+}
+
+/* Override the CustomDropdown styles for this specific usage */
+.address-dropdown ::deep .custom-dropdown {
+    width: 12px;
+    height: 6px;
+}
+
+.address-dropdown i {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+}
+
+.address-dropdown i.expanded {
+    border-top: 6px solid #093B5D;
+    border-bottom: none;
+}
+
+.address-dropdown i.collapsed {
+    border-bottom: 6px solid #093B5D;
+    border-top: none;
+}
+</style>

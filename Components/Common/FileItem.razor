@@ -1,0 +1,67 @@
+@using Financials.Data.Classes
+@inject IJSRuntime JSRuntime
+
+<div class="file-item-container">
+    <button class="remove-button" @onclick="RemoveFile" title="Remove file">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+    </button>
+    
+    <div class="file-item" @ondblclick="OpenFile" title="Double-click to open @File.Name">
+        @GetFileIcon()
+        <div class="file-name">@File.Name</div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public FileData File { get; set; } = new();
+    [Parameter] public EventCallback<string> OnRemove { get; set; }
+
+    private RenderFragment GetFileIcon()
+    {
+        var extension = Path.GetExtension(File.Name)?.ToLower();
+        
+        return @<div class="file-icon @GetFileIconClass(extension)">
+            <div class="file-icon-text">@GetFileIconText(extension)</div>
+        </div>;
+    }
+
+    private string GetFileIconClass(string? extension)
+    {
+        return extension switch
+        {
+            ".pdf" => "pdf-icon",
+            ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".webp" => "image-icon",
+            ".doc" or ".docx" => "doc-icon",
+            ".xls" or ".xlsx" => "excel-icon",
+            _ => "default-icon"
+        };
+    }
+
+    private string GetFileIconText(string? extension)
+    {
+        return extension switch
+        {
+            ".pdf" => "PDF",
+            ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".webp" => "IMG",
+            ".doc" or ".docx" => "DOC",
+            ".xls" or ".xlsx" => "XLS",
+            _ => "FILE"
+        };
+    }
+
+    private async Task OpenFile()
+    {
+        // Open the file in a new tab using the blob URL
+        await JSRuntime.InvokeVoidAsync("openFileInNewTab", File.Url);
+    }
+
+    private async Task RemoveFile()
+    {
+        // Clean up the blob URL before removing
+        await JSRuntime.InvokeVoidAsync("revokeBlobUrl", File.Url);
+        await OnRemove.InvokeAsync(File.Id);
+    }
+}

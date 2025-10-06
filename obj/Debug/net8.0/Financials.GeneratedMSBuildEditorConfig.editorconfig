@@ -1,0 +1,121 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = Financials
+build_property.RootNamespace = Financials
+build_property.ProjectDir = C:\Users\a9kar\OneDrive\Desktop\Financials\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\a9kar\OneDrive\Desktop\Financials
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/App.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Assets/AssetsTable.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBc3NldHNcQXNzZXRzVGFibGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Common/AddressSection.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21tb25cQWRkcmVzc1NlY3Rpb24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Common/AdjustableLoanSection.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21tb25cQWRqdXN0YWJsZUxvYW5TZWN0aW9uLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Common/CustomDropdown.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21tb25cQ3VzdG9tRHJvcGRvd24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Common/FileDropZone.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21tb25cRmlsZURyb3Bab25lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Common/FileItem.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21tb25cRmlsZUl0ZW0ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Common/LinkTable.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21tb25cTGlua1RhYmxlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Common/LoanDataSection.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21tb25cTG9hbkRhdGFTZWN0aW9uLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Common/Navigation.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21tb25cTmF2aWdhdGlvbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Common/Notes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21tb25cTm90ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Common/NumberInput.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21tb25cTnVtYmVySW5wdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Common/PurchaseDetailsSection.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21tb25cUHVyY2hhc2VEZXRhaWxzU2VjdGlvbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Common/RelatedFiles.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21tb25cUmVsYXRlZEZpbGVzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Debts/DebtsTable.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEZWJ0c1xEZWJ0c1RhYmxlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Investments/InvestmentsTable.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xJbnZlc3RtZW50c1xJbnZlc3RtZW50c1RhYmxlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Pages/FileManager.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGaWxlTWFuYWdlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/Savings/SavingsTable.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTYXZpbmdzXFNhdmluZ3NUYWJsZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/a9kar/OneDrive/Desktop/Financials/Components/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 

@@ -1,0 +1,290 @@
+@page "/savings"
+@rendermode InteractiveServer
+@using Financials.Data
+@using Financials.Data.Services
+@using Financials.Data.Classes
+@using Financials.Components.Common
+@inject SavingsService SavingsService
+@inject DebtService DebtService
+@inject AssetService AssetService
+@inject InvestmentService InvestmentService
+@implements IDisposable
+
+<link rel="stylesheet" href="/savings-table.css" />
+
+<div class="savings-table-container">
+    <div class="header">
+        <div class="header-content">
+            <div class="header-item time">Time</div>
+            <div class="header-item annual-sav">Ann'l Sav</div>
+            <div class="header-item acct-description">Acct Description</div>
+            <div class="header-item report-description">Report Description</div>
+            <div class="header-item as-of">As Of</div>
+        </div>
+        <div class="select-savings">Select Savings</div>
+    </div>
+    
+    <div class="content-container">
+        <div class="savings-table">
+            <div class="savings-table-rows">
+                @foreach (var saving in savings)
+                {
+                    <div class="savings-table-row @(selectedSaving == saving ? "selected" : "")" @onclick="@(() => SelectSaving(saving))">
+                        <div class="cell time">
+                            <CustomDropdown 
+                                Value="@saving.Timeframe" 
+                                Options="@timeframeOptions" 
+                                ValueChanged="@(v => UpdateTimeframe(saving, v))" />
+                        </div>
+                        <div class="cell annual-sav">@saving.Value.ToString("N0")</div>
+                        <div class="cell acct-description">@saving.Category</div>
+                        <div class="cell report-description">@saving.ReportDesc</div>
+                        <div class="cell as-of">@(saving.ValueDate?.ToString("MM/dd/yy"))</div>
+                    </div>
+                }
+            </div>
+            <div class="totals-row">
+                <div class="total-item">
+                    <span class="total-label">Total</span>
+                    <span class="total-value">@(savings.Sum(s => s.Value).ToString("N0"))</span>
+                </div>
+                <div class="total-item">
+                    <span class="total-label">After-tax</span>
+                    <span class="total-value">@(GetAfterTaxTotal().ToString("N0"))</span>
+                </div>
+                <div class="total-item">
+                    <span class="total-label">Pre-tax</span>
+                    <span class="total-value">@(GetPreTaxTotal().ToString("N0"))</span>
+                </div>
+                <div class="total-item">
+                    <span class="total-label">Tax-Free</span>
+                    <span class="total-value">@(GetTaxFreeTotal().ToString("N0"))</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scrollable-section">
+            @if (selectedSaving != null)
+            {
+                <div class="savings-details">
+                    <Notes Note="@selectedSaving.Notes" Width="728px" />
+                </div>
+
+                <div style="margin-top: 30px; margin-left: 30px;">
+                    <LinkTable
+                        Title="Associated Income"
+                        DataType="incomes"
+                        Headers='new List<string> { "Annual", "Monthly", "Category", "Report Description", "As Of" }'
+                        ColumnWidths='new List<int> { 100, 100, 120, 250, 94 }'
+                        ColumnAlignments='new List<string> { "right", "right", "left", "left", "center" }'
+                        Data='allAssociatedIncomes'
+                        AllData='allAvailableIncomes'
+                        CurrentlySelected='GetCurrentlySelectedIncomeIndices()'
+                        OnSelectionChanged='OnIncomesSelectionChanged'
+                        Width="728px"
+                    />
+                </div>
+
+                <div style="margin-left: 30px;">
+                    <LinkTable
+                        Title="Associated Account"
+                        DataType="accounts"
+                        Headers='new List<string> { "Own", "Balance", "Category", "Report Description", "As Of" }'
+                        ColumnWidths='new List<int> { 60, 100, 120, 250, 94 }'
+                        ColumnAlignments='new List<string> { "center", "right", "left", "left", "center" }'
+                        Data='allAssociatedAccounts'
+                        AllData='allAvailableAccounts'
+                        CurrentlySelected='GetCurrentlySelectedAccountIndices()'
+                        OnSelectionChanged='OnAccountsSelectionChanged'
+                        Width="628px"
+                    />
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Saving> savings = new();
+    private Saving? selectedSaving;
+    private List<string> timeframeOptions = new() { "NOW", "PAST", "FUTR" };
+
+    // Data sources for LinkTable components
+    private List<List<string>> allAssociatedIncomes = new();
+    private List<List<string>> allAssociatedAccounts = new();
+    
+    // All available data for selection
+    private List<List<string>> allAvailableIncomes = new();
+    private List<List<string>> allAvailableAccounts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        savings = await SavingsService.GetSavingsAsync();
+        selectedSaving = savings.FirstOrDefault();
+        
+        // Initialize data from database services for LinkTable components
+        var debts = await DebtService.GetDebtsAsync();
+        var assets = await AssetService.GetAssetsAsync();
+        var investments = await InvestmentService.GetInvestmentsAsync();
+        
+        // All available incomes (using investments and savings as income sources)
+        allAvailableIncomes = investments.Select(i => new List<string> 
+        { 
+            i.CurrentValue?.ToString("N0") ?? "0", 
+            ((i.CurrentValue ?? 0) / 12).ToString("N0"), 
+            i.AccountType ?? "Investment", 
+            i.ReportDesc ?? "n/a", 
+            i.ValueDate?.ToString("MM/dd/yy") ?? "n/a" 
+        }).Concat(savings.Select(s => new List<string> 
+        { 
+            s.Value.ToString("N0"), 
+            (s.Value / 12).ToString("N0"), 
+            s.Category, 
+            s.ReportDesc, 
+            s.ValueDate?.ToString("MM/dd/yy") ?? "n/a" 
+        })).ToList();
+        
+        // All available accounts (using assets as proxy for accounts)
+        allAvailableAccounts = assets.Select(a => new List<string> 
+        { 
+            a.Owner ?? "", 
+            a.Value.ToString("N0"), 
+            a.Category ?? "", 
+            a.ReportDesc ?? "", 
+            a.ValueDate?.ToString("MM/dd/yy") ?? "n/a" 
+        }).ToList();
+        
+        // Load associated items for the first saving
+        if (selectedSaving != null)
+        {
+            LoadAssociatedItemsForSaving(selectedSaving);
+        }
+        else
+        {
+            // Initially, no items are associated (empty lists)
+            allAssociatedIncomes = new List<List<string>>();
+            allAssociatedAccounts = new List<List<string>>();
+        }
+    }
+
+    private void UpdateTimeframe(Saving saving, string value)
+    {
+        saving.Timeframe = value;
+        // Add any additional logic for updating the saving
+    }
+
+    private void SelectSaving(Saving saving)
+    {
+        selectedSaving = saving;
+        
+        // Load associated items for the selected saving
+        LoadAssociatedItemsForSaving(saving);
+        
+        StateHasChanged();
+    }
+
+    private void LoadAssociatedItemsForSaving(Saving saving)
+    {
+        // Load associated incomes
+        allAssociatedIncomes = saving.AssociatedIncomes
+            .Where(index => index < allAvailableIncomes.Count)
+            .Select(index => allAvailableIncomes[index])
+            .ToList();
+            
+        // Load associated accounts (using assets as proxy)
+        allAssociatedAccounts = saving.AssociatedAssets
+            .Where(index => index < allAvailableAccounts.Count)
+            .Select(index => allAvailableAccounts[index])
+            .ToList();
+    }
+
+    private decimal GetAfterTaxTotal()
+    {
+        // After-tax savings: Savings, Checking, Money Market, Emergency Fund
+        var afterTaxCategories = new[] { "Savings", "Checking", "Money Market", "Emergency Fund" };
+        return savings.Where(s => afterTaxCategories.Contains(s.Category)).Sum(s => s.Value);
+    }
+
+    private decimal GetPreTaxTotal()
+    {
+        // Pre-tax savings: CD (assuming traditional CD)
+        var preTaxCategories = new[] { "CD" };
+        return savings.Where(s => preTaxCategories.Contains(s.Category)).Sum(s => s.Value);
+    }
+
+    private decimal GetTaxFreeTotal()
+    {
+        // Tax-free savings: None in current data, but could include Roth accounts, etc.
+        var taxFreeCategories = new[] { "Roth", "HSA", "Municipal" };
+        return savings.Where(s => taxFreeCategories.Contains(s.Category)).Sum(s => s.Value);
+    }
+
+    private void OnIncomesSelectionChanged(List<int> selectedIndices)
+    {
+        // Update the associated incomes based on selection
+        allAssociatedIncomes = selectedIndices
+            .Where(index => index < allAvailableIncomes.Count)
+            .Select(index => allAvailableIncomes[index])
+            .ToList();
+        
+        // Update the selected saving's associated incomes
+        if (selectedSaving != null)
+        {
+            selectedSaving.AssociatedIncomes = selectedIndices.ToList();
+        }
+        
+        StateHasChanged();
+    }
+
+    private void OnAccountsSelectionChanged(List<int> selectedIndices)
+    {
+        // Update the associated accounts based on selection
+        allAssociatedAccounts = selectedIndices
+            .Where(index => index < allAvailableAccounts.Count)
+            .Select(index => allAvailableAccounts[index])
+            .ToList();
+        
+        // Update the selected saving's associated assets (used as accounts)
+        if (selectedSaving != null)
+        {
+            selectedSaving.AssociatedAssets = selectedIndices.ToList();
+        }
+        
+        StateHasChanged();
+    }
+
+    private List<int> GetCurrentlySelectedIncomeIndices()
+    {
+        if (selectedSaving == null) return new List<int>();
+        
+        var indices = new List<int>();
+        foreach (var incomeIndex in selectedSaving.AssociatedIncomes)
+        {
+            if (incomeIndex < allAvailableIncomes.Count)
+            {
+                indices.Add(incomeIndex);
+            }
+        }
+        return indices;
+    }
+
+    private List<int> GetCurrentlySelectedAccountIndices()
+    {
+        if (selectedSaving == null) return new List<int>();
+        
+        var indices = new List<int>();
+        foreach (var accountIndex in selectedSaving.AssociatedAssets)
+        {
+            if (accountIndex < allAvailableAccounts.Count)
+            {
+                indices.Add(accountIndex);
+            }
+        }
+        return indices;
+    }
+
+    public void Dispose()
+    {
+        // Cleanup if needed
+    }
+}
