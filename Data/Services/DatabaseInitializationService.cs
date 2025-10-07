@@ -119,6 +119,13 @@ namespace Financials.Data.Services
                     LenderPhone = "(555) 123-4567",
                     LenderPhoneExt = "123",
                     LenderName = "Big Bank USA",
+                    // Adjustable loan fields
+                    FutureAdjustDate = new DateTime(2025, 6, 15),
+                    RateTiedTo = "Prime Rate",
+                    Spread = 2.5m,
+                    AdjustableRate = 6.375m,
+                    FutureAdjustRate = 7.25m,
+                    FuturePaymentMade = 1600m,
                     IsInterestOnly = false,
                     HasBalloonPayment = false
                 },
@@ -204,7 +211,14 @@ namespace Financials.Data.Services
                     DividendYield = 2.1m,
                     ExpenseRatio = 0.12m,
                     RiskLevel = "Moderate",
-                    InvestmentType = "Target Date Fund"
+                    InvestmentType = "Target Date Fund",
+                    // New investment breakdown properties
+                    Firm = "Fidelity",
+                    Outside = false,
+                    PreTax = 80000m,
+                    Roth = 25000m,
+                    AfterTax = 20000m,
+                    TaxPaid = 15000m
                 },
                 new Investment 
                 {
@@ -233,7 +247,14 @@ namespace Financials.Data.Services
                     DividendYield = 1.8m,
                     ExpenseRatio = 0.05m,
                     RiskLevel = "Moderate",
-                    InvestmentType = "Mixed Portfolio"
+                    InvestmentType = "Mixed Portfolio",
+                    // New investment breakdown properties
+                    Firm = "Vanguard",
+                    Outside = false,
+                    PreTax = 60000m,
+                    Roth = 0m,
+                    AfterTax = 25000m,
+                    TaxPaid = 20000m
                 },
                 new Investment 
                 {
@@ -262,7 +283,14 @@ namespace Financials.Data.Services
                     DividendYield = 2.5m,
                     ExpenseRatio = 0.25m,
                     RiskLevel = "Conservative",
-                    InvestmentType = "Conservative Fund"
+                    InvestmentType = "Conservative Fund",
+                    // New investment breakdown properties
+                    Firm = "TIAA",
+                    Outside = false,
+                    PreTax = 35000m,
+                    Roth = 0m,
+                    AfterTax = 10000m,
+                    TaxPaid = 8000m
                 }
             };
 

@@ -328,6 +328,8 @@
 
     private async void HideModal()
     {
+        Console.WriteLine($"[LinkTable] HideModal called - Title: '{Title}', DataType: '{DataType}'");
+        
         // Get the selected indices
         var selectedIndices = new List<int>();
         for (int i = 0; i < selectedItems.Count; i++)
@@ -338,8 +340,12 @@
             }
         }
         
+        Console.WriteLine($"[LinkTable] HideModal - Selected Indices: [{string.Join(", ", selectedIndices)}]");
+        
         // Notify parent component of selection changes
+        Console.WriteLine($"[LinkTable] HideModal - Invoking OnSelectionChanged with {selectedIndices.Count} selected items");
         await OnSelectionChanged.InvokeAsync(selectedIndices);
+        Console.WriteLine($"[LinkTable] HideModal - OnSelectionChanged completed");
         
         showModal = false;
     }

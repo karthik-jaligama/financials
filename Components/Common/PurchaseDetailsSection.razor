@@ -1,4 +1,6 @@
 @using Financials.Data
+@using Financials.Data.Services
+@inject AssetService AssetService
 
 <div class="purchase-details-section">
     <div class="purchase-details-grid-table">
@@ -13,17 +15,17 @@
             <div class="information-grid-table">
                 <div class="information-left">
                     <div class="header information-header">Amount</div>
-                    <div class="purchase-price-value"><input type="text" value="@(Asset?.Value ?? 0)" /></div>
-                    <div class="ownership-pct-value"><input type="text" value="@(Asset?.OwnershipPct ?? 0)" /></div>
+                    <div class="purchase-price-value"><input type="text" value="@(Asset?.Value ?? 0)" @oninput="@(async (e) => await UpdateValue(e))" /></div>
+                    <div class="ownership-pct-value"><input type="text" value="@(Asset?.OwnershipPct ?? 0)" @oninput="@(async (e) => await UpdateOwnershipPct(e))" /></div>
                 </div>
                 <div></div>
                 <div class="information-right">
                     <div class="header information-header">As of Date</div>
-                    <div class="date-field purchase-date-value"><input type="date" value="@(Asset?.PurchPriceDate?.ToString("yyyy-MM-dd") ?? "")" /></div>
-                    <div class="date-field ownership-date-value"><input type="date" value="@(Asset?.OwnershipPctDate?.ToString("yyyy-MM-dd") ?? "")" /></div>
+                    <div class="date-field purchase-date-value"><input type="date" value="@(Asset?.PurchPriceDate?.ToString("yyyy-MM-dd") ?? "")" @onchange="@(async (e) => await UpdatePurchPriceDate(e))" /></div>
+                    <div class="date-field ownership-date-value"><input type="date" value="@(Asset?.OwnershipPctDate?.ToString("yyyy-MM-dd") ?? "")" @onchange="@(async (e) => await UpdateOwnershipPctDate(e))" /></div>
                 </div>
             </div>
-            <div class="ownership-detail-value"><input type="text" value="@(Asset?.OwnershipDetail ?? "")" /></div>
+            <div class="ownership-detail-value"><input type="text" value="@(Asset?.OwnershipDetail ?? "")" @oninput="@(async (e) => await UpdateOwnershipDetail(e))" /></div>
         </div>
     </div>
 </div>
@@ -31,6 +33,127 @@
 @code {
     [Parameter]
     public Asset? Asset { get; set; }
+
+    private async Task UpdateValue(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[PurchaseDetailsSection] UpdateValue called - Raw Input: '{e.Value}'");
+        if (Asset != null && decimal.TryParse(e.Value?.ToString(), out decimal value))
+        {
+            Console.WriteLine($"[PurchaseDetailsSection] UpdateValue - Asset ID: {Asset.AssetId}, Old Value: {Asset.Value}, New Value: {value}");
+            Asset.Value = value;
+            try
+            {
+                await AssetService.UpdateAssetAsync(Asset);
+                Console.WriteLine($"[PurchaseDetailsSection] UpdateValue SUCCESS - Asset ID: {Asset.AssetId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[PurchaseDetailsSection] UpdateValue ERROR - Asset ID: {Asset.AssetId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[PurchaseDetailsSection] UpdateValue - Failed to parse decimal or Asset is null");
+        }
+    }
+
+    private async Task UpdateOwnershipPct(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPct called - Raw Input: '{e.Value}'");
+        if (Asset != null && decimal.TryParse(e.Value?.ToString(), out decimal value))
+        {
+            Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPct - Asset ID: {Asset.AssetId}, Old Value: {Asset.OwnershipPct}, New Value: {value}");
+            Asset.OwnershipPct = value;
+            try
+            {
+                await AssetService.UpdateAssetAsync(Asset);
+                Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPct SUCCESS - Asset ID: {Asset.AssetId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPct ERROR - Asset ID: {Asset.AssetId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPct - Failed to parse decimal or Asset is null");
+        }
+    }
+
+    private async Task UpdatePurchPriceDate(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[PurchaseDetailsSection] UpdatePurchPriceDate called - Raw Input: '{e.Value}'");
+        if (Asset != null && DateTime.TryParse(e.Value?.ToString(), out DateTime date))
+        {
+            Console.WriteLine($"[PurchaseDetailsSection] UpdatePurchPriceDate - Asset ID: {Asset.AssetId}, Old Value: {Asset.PurchPriceDate}, New Value: {date}");
+            Asset.PurchPriceDate = date;
+            try
+            {
+                await AssetService.UpdateAssetAsync(Asset);
+                Console.WriteLine($"[PurchaseDetailsSection] UpdatePurchPriceDate SUCCESS - Asset ID: {Asset.AssetId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[PurchaseDetailsSection] UpdatePurchPriceDate ERROR - Asset ID: {Asset.AssetId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[PurchaseDetailsSection] UpdatePurchPriceDate - Failed to parse date or Asset is null");
+        }
+    }
+
+    private async Task UpdateOwnershipPctDate(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPctDate called - Raw Input: '{e.Value}'");
+        if (Asset != null && DateTime.TryParse(e.Value?.ToString(), out DateTime date))
+        {
+            Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPctDate - Asset ID: {Asset.AssetId}, Old Value: {Asset.OwnershipPctDate}, New Value: {date}");
+            Asset.OwnershipPctDate = date;
+            try
+            {
+                await AssetService.UpdateAssetAsync(Asset);
+                Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPctDate SUCCESS - Asset ID: {Asset.AssetId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPctDate ERROR - Asset ID: {Asset.AssetId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPctDate - Failed to parse date or Asset is null");
+        }
+    }
+
+    private async Task UpdateOwnershipDetail(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipDetail called - Raw Input: '{e.Value}'");
+        if (Asset != null)
+        {
+            string newValue = e.Value?.ToString() ?? "";
+            Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipDetail - Asset ID: {Asset.AssetId}, Old Value: '{Asset.OwnershipDetail}', New Value: '{newValue}'");
+            Asset.OwnershipDetail = newValue;
+            try
+            {
+                await AssetService.UpdateAssetAsync(Asset);
+                Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipDetail SUCCESS - Asset ID: {Asset.AssetId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipDetail ERROR - Asset ID: {Asset.AssetId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipDetail - Asset is null");
+        }
+    }
 }
 
 <style>

@@ -31,6 +31,12 @@ namespace Financials.Data
         public DateTime? MaturityDate { get; set; }
         public decimal? InterestRate { get; set; }
         public string? InvestmentType { get; set; }
+        public string? Firm { get; set; }
+        public bool? Outside { get; set; }
+        public decimal? PreTax { get; set; }
+        public decimal? Roth { get; set; }
+        public decimal? AfterTax { get; set; }
+        public decimal? TaxPaid { get; set; }
         
         // Associated entities
         public List<int> AssociatedAssets { get; set; } = new();
@@ -55,6 +61,10 @@ namespace Financials.Data
             DividendYield = 0;
             ExpenseRatio = 0;
             InterestRate = 0;
+            PreTax = 0;
+            Roth = 0;
+            AfterTax = 0;
+            TaxPaid = 0;
         }
 
         public void Copy(Investment source)
@@ -88,6 +98,12 @@ namespace Financials.Data
             MaturityDate = source.MaturityDate;
             InterestRate = source.InterestRate;
             InvestmentType = source.InvestmentType;
+            Firm = source.Firm;
+            Outside = source.Outside;
+            PreTax = source.PreTax;
+            Roth = source.Roth;
+            AfterTax = source.AfterTax;
+            TaxPaid = source.TaxPaid;
         }
     }
 }

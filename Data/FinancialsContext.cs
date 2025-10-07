@@ -59,6 +59,13 @@ namespace Financials.Data
                 entity.Property(e => e.DividendYield).HasColumnType("decimal(18,2)");
                 entity.Property(e => e.ExpenseRatio).HasColumnType("decimal(18,2)");
                 entity.Property(e => e.InterestRate).HasColumnType("decimal(18,2)");
+                // New investment breakdown properties
+                entity.Property(e => e.PreTax).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Roth).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.AfterTax).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.TaxPaid).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Firm).HasMaxLength(255);
+                entity.Property(e => e.Outside);
             });
 
             // Configure Saving entity

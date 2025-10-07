@@ -10,6 +10,26 @@
     overflow: hidden;
 }
 
+/* Number Input Styling */
+.number-input {
+    height: 21px !important;
+    padding: 2px 8px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    font-family: Inter !important;
+    font-size: 14px !important;
+    color: #333 !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+}
+
+.number-input:focus {
+    outline: none !important;
+    border-color: #0C3B5D !important;
+    box-shadow: 0 0 0 2px rgba(12, 59, 93, 0.2) !important;
+}
+
 /* Header Styles */
 .investments-container > .header {
     width: 1510px;
@@ -453,12 +473,9 @@
 }
 
 .breakdown-input {
-    display: flex;
     width: 100px;
     height: 34px;
     padding: 0 10px;
-    justify-content: flex-end;
-    align-items: center;
     flex-shrink: 0;
     border: 0.5px solid #4C4C4F;
     background: #FFF;
@@ -467,6 +484,8 @@
     font-family: Inter, sans-serif;
     color: #333;
     box-sizing: border-box;
+    text-align: right;
+    outline: none;
 }
 
 .breakdown-input:focus,

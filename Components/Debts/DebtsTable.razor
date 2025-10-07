@@ -267,19 +267,52 @@
         }
     }
 
-    private void UpdateTimeframe(Debt debt, string value)
+    private async Task UpdateTimeframe(Debt debt, string value)
     {
+        Console.WriteLine($"[DebtsTable] UpdateTimeframe called - Debt ID: {debt.DebtId}, Old Value: '{debt.Timeframe}', New Value: '{value}'");
         debt.Timeframe = value;
+        try
+        {
+            await DebtService.UpdateDebtAsync(debt);
+            Console.WriteLine($"[DebtsTable] UpdateTimeframe SUCCESS - Debt ID: {debt.DebtId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DebtsTable] UpdateTimeframe ERROR - Debt ID: {debt.DebtId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
     }
 
-    private void UpdateOwner(Debt debt, string value)
+    private async Task UpdateOwner(Debt debt, string value)
     {
+        Console.WriteLine($"[DebtsTable] UpdateOwner called - Debt ID: {debt.DebtId}, Old Value: '{debt.Owner}', New Value: '{value}'");
         debt.Owner = value;
+        try
+        {
+            await DebtService.UpdateDebtAsync(debt);
+            Console.WriteLine($"[DebtsTable] UpdateOwner SUCCESS - Debt ID: {debt.DebtId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DebtsTable] UpdateOwner ERROR - Debt ID: {debt.DebtId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
     }
 
-    private void UpdateCategory(Debt debt, string value)
+    private async Task UpdateCategory(Debt debt, string value)
     {
+        Console.WriteLine($"[DebtsTable] UpdateCategory called - Debt ID: {debt.DebtId}, Old Value: '{debt.Category}', New Value: '{value}'");
         debt.Category = value;
+        try
+        {
+            await DebtService.UpdateDebtAsync(debt);
+            Console.WriteLine($"[DebtsTable] UpdateCategory SUCCESS - Debt ID: {debt.DebtId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DebtsTable] UpdateCategory ERROR - Debt ID: {debt.DebtId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
     }
 
     private void SelectDebt(Debt debt)
@@ -311,20 +344,6 @@
             .ToList();
     }
 
-    private void UpdateRateTiedTo(string value)
-    {
-        selectedDebt.RateTiedTo = value;
-    }
-
-    private void UpdateIsInterestOnly(string value)
-    {
-        selectedDebt.IsInterestOnly = value == "Yes";
-    }
-
-    private void UpdateHasBalloonPayment(string value)
-    {
-        selectedDebt.HasBalloonPayment = value == "Yes";
-    }
 
     private double CalculateWeightedAverageRate()
     {
@@ -351,8 +370,9 @@
         });
     }
 
-    private void OnAssetsSelectionChanged(List<int> selectedIndices)
+    private async Task OnAssetsSelectionChanged(List<int> selectedIndices)
     {
+        Console.WriteLine($"[DebtsTable] OnAssetsSelectionChanged called - Selected Indices: [{string.Join(", ", selectedIndices)}]");
         // Update the associated assets based on selection
         allAssociatedAssets = selectedIndices
             .Where(index => index < allAvailableAssets.Count)
@@ -362,14 +382,25 @@
         // Update the selected debt's associated assets
         if (selectedDebt != null)
         {
+            Console.WriteLine($"[DebtsTable] OnAssetsSelectionChanged - Updating Debt ID: {selectedDebt.DebtId} with {selectedIndices.Count} associated assets");
             selectedDebt.AssociatedAssets = selectedIndices.ToList();
+            try
+            {
+                await DebtService.UpdateDebtAsync(selectedDebt);
+                Console.WriteLine($"[DebtsTable] OnAssetsSelectionChanged SUCCESS - Debt ID: {selectedDebt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DebtsTable] OnAssetsSelectionChanged ERROR - Debt ID: {selectedDebt.DebtId}, Error: {ex.Message}");
+            }
         }
         
         StateHasChanged();
     }
 
-    private void OnIncomesSelectionChanged(List<int> selectedIndices)
+    private async Task OnIncomesSelectionChanged(List<int> selectedIndices)
     {
+        Console.WriteLine($"[DebtsTable] OnIncomesSelectionChanged called - Selected Indices: [{string.Join(", ", selectedIndices)}]");
         // Update the associated incomes based on selection
         allAssociatedIncomes = selectedIndices
             .Where(index => index < allAvailableIncomes.Count)
@@ -379,14 +410,25 @@
         // Update the selected debt's associated incomes
         if (selectedDebt != null)
         {
+            Console.WriteLine($"[DebtsTable] OnIncomesSelectionChanged - Updating Debt ID: {selectedDebt.DebtId} with {selectedIndices.Count} associated incomes");
             selectedDebt.AssociatedIncomes = selectedIndices.ToList();
+            try
+            {
+                await DebtService.UpdateDebtAsync(selectedDebt);
+                Console.WriteLine($"[DebtsTable] OnIncomesSelectionChanged SUCCESS - Debt ID: {selectedDebt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DebtsTable] OnIncomesSelectionChanged ERROR - Debt ID: {selectedDebt.DebtId}, Error: {ex.Message}");
+            }
         }
         
         StateHasChanged();
     }
 
-    private void OnInsurancesSelectionChanged(List<int> selectedIndices)
+    private async Task OnInsurancesSelectionChanged(List<int> selectedIndices)
     {
+        Console.WriteLine($"[DebtsTable] OnInsurancesSelectionChanged called - Selected Indices: [{string.Join(", ", selectedIndices)}]");
         // Update the associated insurances based on selection
         allAssociatedInsurances = selectedIndices
             .Where(index => index < allAvailableInsurances.Count)
@@ -396,7 +438,17 @@
         // Update the selected debt's associated insurances
         if (selectedDebt != null)
         {
+            Console.WriteLine($"[DebtsTable] OnInsurancesSelectionChanged - Updating Debt ID: {selectedDebt.DebtId} with {selectedIndices.Count} associated insurances");
             selectedDebt.AssociatedInsurances = selectedIndices.ToList();
+            try
+            {
+                await DebtService.UpdateDebtAsync(selectedDebt);
+                Console.WriteLine($"[DebtsTable] OnInsurancesSelectionChanged SUCCESS - Debt ID: {selectedDebt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DebtsTable] OnInsurancesSelectionChanged ERROR - Debt ID: {selectedDebt.DebtId}, Error: {ex.Message}");
+            }
         }
         
         StateHasChanged();

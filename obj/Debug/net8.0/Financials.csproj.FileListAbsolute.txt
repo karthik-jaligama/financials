@@ -258,3 +258,4 @@ C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\refint\Financials.dl
 C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.pdb
 C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.genruntimeconfig.cache
 C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\ref\Financials.dll
+C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.sourcelink.json

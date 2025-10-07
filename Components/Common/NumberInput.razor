@@ -6,12 +6,15 @@
        @ref="inputRef"
        value="@FormattedValue" 
        @oninput="HandleNumberInput" 
+       @onchange="HandleChange"
        @onblur="HandleBlur"
        @attributes="AdditionalAttributes" />
 
 @code {
     [Parameter] public decimal? Value { get; set; }
     [Parameter] public EventCallback<decimal?> ValueChanged { get; set; }
+    [Parameter] public EventCallback<decimal?> OnValueChanged { get; set; }
+    [Parameter] public EventCallback<ChangeEventArgs> OnChange { get; set; }
     [Parameter] public string CssClass { get; set; } = "";
     [Parameter] public Dictionary<string, object> AdditionalAttributes { get; set; } = new();
 
@@ -30,13 +33,21 @@
 
     private async Task HandleNumberInput(ChangeEventArgs e)
     {
-        if (e.Value == null) return;
+        Console.WriteLine($"[NumberInput] HandleNumberInput called - Raw Input: '{e.Value}'");
+        
+        if (e.Value == null) 
+        {
+            Console.WriteLine($"[NumberInput] HandleNumberInput - Input is null, returning");
+            return;
+        }
         
         string input = e.Value.ToString() ?? "";
+        Console.WriteLine($"[NumberInput] HandleNumberInput - Processing input: '{input}'");
         
         // Special handling for decimal input
         if (input.EndsWith("."))
         {
+            Console.WriteLine($"[NumberInput] HandleNumberInput - Input ends with decimal point, formatting and returning");
             await JSRuntime.InvokeVoidAsync("formatNumberInput", input);
             return;
         }
@@ -47,6 +58,7 @@
             string[] parts = input.Split('.');
             if (parts.Length == 2 && parts[1].Length < 2)
             {
+                Console.WriteLine($"[NumberInput] HandleNumberInput - Incomplete decimal input, formatting and returning");
                 await JSRuntime.InvokeVoidAsync("formatNumberInput", input);
                 return;
             }
@@ -54,23 +66,57 @@
         
         // Remove any non-numeric characters except decimal point
         string numericOnly = new string(input.Where(c => char.IsDigit(c) || c == '.').ToArray());
+        Console.WriteLine($"[NumberInput] HandleNumberInput - Numeric only: '{numericOnly}'");
         
         if (decimal.TryParse(numericOnly, out decimal result))
         {
+            Console.WriteLine($"[NumberInput] HandleNumberInput - Parsed decimal: {result}");
+            
             // Format the number with commas and 2 decimal places only if needed
             string formatted = FormatNumber(result);
+            Console.WriteLine($"[NumberInput] HandleNumberInput - Formatted: '{formatted}'");
             
             // Update the input value using JS interop
             await JSRuntime.InvokeVoidAsync("formatNumberInput", formatted);
             
             // Update the bound value
+            Console.WriteLine($"[NumberInput] HandleNumberInput - Invoking ValueChanged with: {result}");
             await ValueChanged.InvokeAsync(result);
+            
+            // Trigger additional callback if provided
+            if (OnValueChanged.HasDelegate)
+            {
+                Console.WriteLine($"[NumberInput] HandleNumberInput - Invoking OnValueChanged with: {result}");
+                await OnValueChanged.InvokeAsync(result);
+            }
+        }
+        else
+        {
+            Console.WriteLine($"[NumberInput] HandleNumberInput - Failed to parse decimal from: '{numericOnly}'");
         }
     }
 
     private async Task HandleBlur(FocusEventArgs e)
     {
         await JSRuntime.InvokeVoidAsync("handleInputBlur");
+    }
+
+    private async Task HandleChange(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[NumberInput] HandleChange called - Raw Input: '{e.Value}'");
+        Console.WriteLine($"[NumberInput] HandleChange - FormattedValue: '{FormattedValue}'");
+        Console.WriteLine($"[NumberInput] HandleChange - Value property: '{Value}'");
+        
+        // Trigger the OnChange callback if provided
+        if (OnChange.HasDelegate)
+        {
+            Console.WriteLine($"[NumberInput] HandleChange - Invoking OnChange callback with e.Value: '{e.Value}'");
+            await OnChange.InvokeAsync(e);
+        }
+        else
+        {
+            Console.WriteLine($"[NumberInput] HandleChange - OnChange callback not provided");
+        }
     }
 }
 

@@ -327,6 +327,9 @@ namespace Financials.Migrations
                     b.Property<string>("AccountType")
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal?>("AfterTax")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal?>("AnnualReturn")
                         .HasColumnType("decimal(18,2)");
 
@@ -368,6 +371,10 @@ namespace Financials.Migrations
                     b.Property<decimal?>("ExpenseRatio")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("Firm")
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("HouseholdId")
                         .HasColumnType("INTEGER");
 
@@ -386,8 +393,14 @@ namespace Financials.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool?>("Outside")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Owner")
                         .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("PreTax")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("PurchaseDate")
                         .HasColumnType("TEXT");
@@ -404,6 +417,9 @@ namespace Financials.Migrations
                     b.Property<string>("RiskLevel")
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal?>("Roth")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal?>("SharePrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -415,6 +431,9 @@ namespace Financials.Migrations
 
                     b.Property<string>("Symbol")
                         .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("TaxPaid")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Timeframe")
                         .HasColumnType("TEXT");

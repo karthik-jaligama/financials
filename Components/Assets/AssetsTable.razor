@@ -186,22 +186,49 @@
 
     private async Task UpdateTimeframe(Asset asset, string value)
     {
+        Console.WriteLine($"[AssetsTable] UpdateTimeframe called - Asset ID: {asset.AssetId}, Old Value: '{asset.Timeframe}', New Value: '{value}'");
         asset.Timeframe = value;
-        await AssetService.UpdateAssetAsync(asset);
+        try
+        {
+            await AssetService.UpdateAssetAsync(asset);
+            Console.WriteLine($"[AssetsTable] UpdateTimeframe SUCCESS - Asset ID: {asset.AssetId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AssetsTable] UpdateTimeframe ERROR - Asset ID: {asset.AssetId}, Error: {ex.Message}");
+        }
         StateHasChanged();
     }
 
     private async Task UpdateOwner(Asset asset, string value)
     {
+        Console.WriteLine($"[AssetsTable] UpdateOwner called - Asset ID: {asset.AssetId}, Old Value: '{asset.Owner}', New Value: '{value}'");
         asset.Owner = value;
-        await AssetService.UpdateAssetAsync(asset);
+        try
+        {
+            await AssetService.UpdateAssetAsync(asset);
+            Console.WriteLine($"[AssetsTable] UpdateOwner SUCCESS - Asset ID: {asset.AssetId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AssetsTable] UpdateOwner ERROR - Asset ID: {asset.AssetId}, Error: {ex.Message}");
+        }
         StateHasChanged();
     }
 
     private async Task UpdateCategory(Asset asset, string value)
     {
+        Console.WriteLine($"[AssetsTable] UpdateCategory called - Asset ID: {asset.AssetId}, Old Value: '{asset.Category}', New Value: '{value}'");
         asset.Category = value;
-        await AssetService.UpdateAssetAsync(asset);
+        try
+        {
+            await AssetService.UpdateAssetAsync(asset);
+            Console.WriteLine($"[AssetsTable] UpdateCategory SUCCESS - Asset ID: {asset.AssetId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AssetsTable] UpdateCategory ERROR - Asset ID: {asset.AssetId}, Error: {ex.Message}");
+        }
         StateHasChanged();
     }
 
@@ -228,8 +255,9 @@
             .ToList();
     }
 
-    private void OnDebtsSelectionChanged(List<int> selectedIndices)
+    private async Task OnDebtsSelectionChanged(List<int> selectedIndices)
     {
+        Console.WriteLine($"[AssetsTable] OnDebtsSelectionChanged called - Selected Indices: [{string.Join(", ", selectedIndices)}]");
         // Update the associated debts based on selection
         allAssociatedDebts = selectedIndices
             .Where(index => index < allAvailableDebts.Count)
@@ -239,14 +267,25 @@
         // Update the selected asset's associated debts
         if (selectedAsset != null)
         {
+            Console.WriteLine($"[AssetsTable] OnDebtsSelectionChanged - Updating Asset ID: {selectedAsset.AssetId} with {selectedIndices.Count} associated debts");
             selectedAsset.AssociatedDebts = selectedIndices.ToList();
+            try
+            {
+                await AssetService.UpdateAssetAsync(selectedAsset);
+                Console.WriteLine($"[AssetsTable] OnDebtsSelectionChanged SUCCESS - Asset ID: {selectedAsset.AssetId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AssetsTable] OnDebtsSelectionChanged ERROR - Asset ID: {selectedAsset.AssetId}, Error: {ex.Message}");
+            }
         }
         
         StateHasChanged();
     }
 
-    private void OnInsurancesSelectionChanged(List<int> selectedIndices)
+    private async Task OnInsurancesSelectionChanged(List<int> selectedIndices)
     {
+        Console.WriteLine($"[AssetsTable] OnInsurancesSelectionChanged called - Selected Indices: [{string.Join(", ", selectedIndices)}]");
         // Update the associated insurances based on selection
         allAssociatedInsurances = selectedIndices
             .Where(index => index < allAvailableInsurances.Count)
@@ -256,7 +295,17 @@
         // Update the selected asset's associated insurances
         if (selectedAsset != null)
         {
+            Console.WriteLine($"[AssetsTable] OnInsurancesSelectionChanged - Updating Asset ID: {selectedAsset.AssetId} with {selectedIndices.Count} associated insurances");
             selectedAsset.AssociatedInsurances = selectedIndices.ToList();
+            try
+            {
+                await AssetService.UpdateAssetAsync(selectedAsset);
+                Console.WriteLine($"[AssetsTable] OnInsurancesSelectionChanged SUCCESS - Asset ID: {selectedAsset.AssetId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AssetsTable] OnInsurancesSelectionChanged ERROR - Asset ID: {selectedAsset.AssetId}, Error: {ex.Message}");
+            }
         }
         
         StateHasChanged();

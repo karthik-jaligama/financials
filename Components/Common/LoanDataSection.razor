@@ -1,5 +1,7 @@
 @using Financials.Data
+@using Financials.Data.Services
 @inject IJSRuntime JSRuntime
+@inject DebtService DebtService
 
 <div class="loan-data-section">
     <div class="loan-grid-table">
@@ -14,11 +16,11 @@
         <div></div>
         <div class="amount">
             <div class="header amount-header">Amount</div>
-            <div class="value date-field loan-date-value"><input type="date" value="@(Debt?.OriginalLoanDate?.ToString("yyyy-MM-dd") ?? "")" @onblur="HandleBlur" /></div>
-            <div class="value loan-amount-value"><input type="text" class="number-input" @ref="originalLoanAmountInput" value="@FormatNumber(Debt?.OriginalLoanAmount ?? 0)" @oninput="HandleNumberInput" @onblur="HandleBlur" /></div>
-            <div class="value borrow-limit-value"><input type="text" class="number-input" @ref="borrowLimitInput" value="@FormatNumber(Debt?.BorrowLimit ?? 0)" @oninput="HandleNumberInput" @onblur="HandleBlur" /></div>
-            <div class="value balance-value"><input type="text" class="number-input" @ref="balanceInput" value="@FormatNumber(Debt?.Balance ?? 0)" @oninput="HandleNumberInput" @onblur="HandleBlur" /></div>
-            <div class="value escrow-value"><input type="text" class="number-input" @ref="escrowPaymentInput" value="@FormatNumber(Debt?.EscrowPayment ?? 0)" @oninput="HandleNumberInput" @onblur="HandleBlur" /></div>
+            <div class="value date-field loan-date-value"><input type="date" value="@(Debt?.OriginalLoanDate?.ToString("yyyy-MM-dd") ?? "")" @onchange="@(async (e) => await UpdateOriginalLoanDate(e))" /></div>
+            <div class="value loan-amount-value"><input type="text" class="number-input" @ref="originalLoanAmountInput" value="@FormatNumber(Debt?.OriginalLoanAmount ?? 0)" @oninput="@(async (e) => await UpdateOriginalLoanAmount(e))" /></div>
+            <div class="value borrow-limit-value"><input type="text" class="number-input" @ref="borrowLimitInput" value="@FormatNumber(Debt?.BorrowLimit ?? 0)" @oninput="@(async (e) => await UpdateBorrowLimit(e))" /></div>
+            <div class="value balance-value"><input type="text" class="number-input" @ref="balanceInput" value="@FormatNumber(Debt?.Balance ?? 0)" @oninput="@(async (e) => await UpdateBalance(e))" /></div>
+            <div class="value escrow-value"><input type="text" class="number-input" @ref="escrowPaymentInput" value="@FormatNumber(Debt?.EscrowPayment ?? 0)" @oninput="@(async (e) => await UpdateEscrowPayment(e))" /></div>
         </div>
         <div></div>
         <div class="lender-information">
@@ -33,17 +35,17 @@
                 </div>
                 <div></div>
                 <div class="lender-values">
-                    <div class="value loan-number-value"><input type="text" value="@(Debt?.LoanNumber ?? "")" /></div>
-                    <div class="value loan-rep-value"><input type="text" value="@(Debt?.LoanRepresentative ?? "")" /></div>
+                    <div class="value loan-number-value"><input type="text" value="@(Debt?.LoanNumber ?? "")" @oninput="@(async (e) => await UpdateLoanNumber(e))" /></div>
+                    <div class="value loan-rep-value"><input type="text" value="@(Debt?.LoanRepresentative ?? "")" @oninput="@(async (e) => await UpdateLoanRepresentative(e))" /></div>
                     <div class="phone-number-table">
-                        <div class="value lender-phone-value"><input type="text" value="@(Debt?.LenderPhone ?? "")" /></div>
+                        <div class="value lender-phone-value"><input type="text" value="@(Debt?.LenderPhone ?? "")" @oninput="@(async (e) => await UpdateLenderPhone(e))" /></div>
                         <div></div>
                         <div class="label">Ext:</div>
                         <div></div>
-                        <div class="value phone-ext-value"><input type="text" value="@(Debt?.LenderPhoneExt ?? "")" /></div>
+                        <div class="value phone-ext-value"><input type="text" value="@(Debt?.LenderPhoneExt ?? "")" @oninput="@(async (e) => await UpdateLenderPhoneExt(e))" /></div>
                     </div>
-                    <div class="value lender-name-value"><input type="text" value="@(Debt?.LenderName ?? "")" /></div>
-                    <div class="value date-field escrow-date-value"><input type="date" value="@(Debt?.EscrowPaymentDate?.ToString("yyyy-MM-dd") ?? "")" /></div>
+                    <div class="value lender-name-value"><input type="text" value="@(Debt?.LenderName ?? "")" @oninput="@(async (e) => await UpdateLenderName(e))" /></div>
+                    <div class="value date-field escrow-date-value"><input type="date" value="@(Debt?.EscrowPaymentDate?.ToString("yyyy-MM-dd") ?? "")" @onchange="@(async (e) => await UpdateEscrowPaymentDate(e))" /></div>
                 </div>
             </div>
         </div>
@@ -102,7 +104,7 @@
 
 .phone-number-table {
     display: grid;
-    grid-template-columns: 125px 10px 30px 6px 35px;
+    grid-template-columns: 125px 10px 30px 6px 25px;
     gap: 0px;
 }
 
@@ -246,6 +248,11 @@ input[type="number"] {
     letter-spacing: 0;
     font-variant-numeric: tabular-nums;
 }
+
+.phone-ext-value input {
+    width: 29px !important;
+    min-width: 29px !important;
+}
 </style>
 
 @code {
@@ -307,6 +314,271 @@ input[type="number"] {
     private async Task HandleBlur(FocusEventArgs e)
     {
         await JSRuntime.InvokeVoidAsync("handleInputBlur");
+    }
+
+    // Update methods with console logging
+    private async Task UpdateOriginalLoanDate(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[LoanDataSection] UpdateOriginalLoanDate called - Raw Input: '{e.Value}'");
+        if (Debt != null && DateTime.TryParse(e.Value?.ToString(), out DateTime date))
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateOriginalLoanDate - Debt ID: {Debt.DebtId}, Old Value: {Debt.OriginalLoanDate}, New Value: {date}");
+            Debt.OriginalLoanDate = date;
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[LoanDataSection] UpdateOriginalLoanDate SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[LoanDataSection] UpdateOriginalLoanDate ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateOriginalLoanDate - Failed to parse date or Debt is null");
+        }
+    }
+
+    private async Task UpdateOriginalLoanAmount(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[LoanDataSection] UpdateOriginalLoanAmount called - Raw Input: '{e.Value}'");
+        if (Debt != null && decimal.TryParse(e.Value?.ToString()?.Replace(",", ""), out decimal value))
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateOriginalLoanAmount - Debt ID: {Debt.DebtId}, Old Value: {Debt.OriginalLoanAmount}, New Value: {value}");
+            Debt.OriginalLoanAmount = value;
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[LoanDataSection] UpdateOriginalLoanAmount SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[LoanDataSection] UpdateOriginalLoanAmount ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateOriginalLoanAmount - Failed to parse decimal or Debt is null");
+        }
+    }
+
+    private async Task UpdateBorrowLimit(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[LoanDataSection] UpdateBorrowLimit called - Raw Input: '{e.Value}'");
+        if (Debt != null && decimal.TryParse(e.Value?.ToString()?.Replace(",", ""), out decimal value))
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateBorrowLimit - Debt ID: {Debt.DebtId}, Old Value: {Debt.BorrowLimit}, New Value: {value}");
+            Debt.BorrowLimit = value;
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[LoanDataSection] UpdateBorrowLimit SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[LoanDataSection] UpdateBorrowLimit ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateBorrowLimit - Failed to parse decimal or Debt is null");
+        }
+    }
+
+    private async Task UpdateBalance(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[LoanDataSection] UpdateBalance called - Raw Input: '{e.Value}'");
+        if (Debt != null && decimal.TryParse(e.Value?.ToString()?.Replace(",", ""), out decimal value))
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateBalance - Debt ID: {Debt.DebtId}, Old Value: {Debt.Balance}, New Value: {value}");
+            Debt.Balance = value;
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[LoanDataSection] UpdateBalance SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[LoanDataSection] UpdateBalance ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateBalance - Failed to parse decimal or Debt is null");
+        }
+    }
+
+    private async Task UpdateEscrowPayment(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[LoanDataSection] UpdateEscrowPayment called - Raw Input: '{e.Value}'");
+        if (Debt != null && decimal.TryParse(e.Value?.ToString()?.Replace(",", ""), out decimal value))
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateEscrowPayment - Debt ID: {Debt.DebtId}, Old Value: {Debt.EscrowPayment}, New Value: {value}");
+            Debt.EscrowPayment = value;
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[LoanDataSection] UpdateEscrowPayment SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[LoanDataSection] UpdateEscrowPayment ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateEscrowPayment - Failed to parse decimal or Debt is null");
+        }
+    }
+
+    private async Task UpdateLoanNumber(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[LoanDataSection] UpdateLoanNumber called - Raw Input: '{e.Value}'");
+        if (Debt != null)
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateLoanNumber - Debt ID: {Debt.DebtId}, Old Value: '{Debt.LoanNumber}', New Value: '{e.Value}'");
+            Debt.LoanNumber = e.Value?.ToString() ?? "";
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[LoanDataSection] UpdateLoanNumber SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[LoanDataSection] UpdateLoanNumber ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateLoanNumber - Debt is null");
+        }
+    }
+
+    private async Task UpdateLoanRepresentative(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[LoanDataSection] UpdateLoanRepresentative called - Raw Input: '{e.Value}'");
+        if (Debt != null)
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateLoanRepresentative - Debt ID: {Debt.DebtId}, Old Value: '{Debt.LoanRepresentative}', New Value: '{e.Value}'");
+            Debt.LoanRepresentative = e.Value?.ToString() ?? "";
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[LoanDataSection] UpdateLoanRepresentative SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[LoanDataSection] UpdateLoanRepresentative ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateLoanRepresentative - Debt is null");
+        }
+    }
+
+    private async Task UpdateLenderPhone(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[LoanDataSection] UpdateLenderPhone called - Raw Input: '{e.Value}'");
+        if (Debt != null)
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateLenderPhone - Debt ID: {Debt.DebtId}, Old Value: '{Debt.LenderPhone}', New Value: '{e.Value}'");
+            Debt.LenderPhone = e.Value?.ToString() ?? "";
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[LoanDataSection] UpdateLenderPhone SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[LoanDataSection] UpdateLenderPhone ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateLenderPhone - Debt is null");
+        }
+    }
+
+    private async Task UpdateLenderPhoneExt(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[LoanDataSection] UpdateLenderPhoneExt called - Raw Input: '{e.Value}'");
+        if (Debt != null)
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateLenderPhoneExt - Debt ID: {Debt.DebtId}, Old Value: '{Debt.LenderPhoneExt}', New Value: '{e.Value}'");
+            Debt.LenderPhoneExt = e.Value?.ToString() ?? "";
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[LoanDataSection] UpdateLenderPhoneExt SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[LoanDataSection] UpdateLenderPhoneExt ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateLenderPhoneExt - Debt is null");
+        }
+    }
+
+    private async Task UpdateLenderName(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[LoanDataSection] UpdateLenderName called - Raw Input: '{e.Value}'");
+        if (Debt != null)
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateLenderName - Debt ID: {Debt.DebtId}, Old Value: '{Debt.LenderName}', New Value: '{e.Value}'");
+            Debt.LenderName = e.Value?.ToString() ?? "";
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[LoanDataSection] UpdateLenderName SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[LoanDataSection] UpdateLenderName ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateLenderName - Debt is null");
+        }
+    }
+
+    private async Task UpdateEscrowPaymentDate(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[LoanDataSection] UpdateEscrowPaymentDate called - Raw Input: '{e.Value}'");
+        if (Debt != null && DateTime.TryParse(e.Value?.ToString(), out DateTime date))
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateEscrowPaymentDate - Debt ID: {Debt.DebtId}, Old Value: {Debt.EscrowPaymentDate}, New Value: {date}");
+            Debt.EscrowPaymentDate = date;
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[LoanDataSection] UpdateEscrowPaymentDate SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[LoanDataSection] UpdateEscrowPaymentDate ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[LoanDataSection] UpdateEscrowPaymentDate - Failed to parse date or Debt is null");
+        }
     }
 }
 

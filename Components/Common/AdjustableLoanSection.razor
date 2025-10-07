@@ -1,4 +1,6 @@
 @using Financials.Data
+@using Financials.Data.Services
+@inject DebtService DebtService
 
 <div class="adjustable-loan-section">
     <div class="adjustable-loan-grid-table">
@@ -13,11 +15,16 @@
         <div></div>
         <div class="details">
             <div class="header details-header">Details</div>
-            <div class="value future-adj-date-value">@(Debt?.FutureAdjustDate?.ToString("MM/dd/yy") ?? "n/a")</div>
-            <div class="value rate-tied-to-value">@(Debt?.RateTiedTo ?? "n/a")</div>
-            <div class="value spread-value">@(Debt?.Spread?.ToString("N0") ?? "n/a")</div>
-            <div class="value current-rate-value">@(Debt?.AdjustableRate?.ToString("N0") ?? "n/a")</div>
-            <div class="value interest-only-value">@(Debt?.IsInterestOnly == true ? "Yes" : "No")</div>
+            <div class="value future-adj-date-value"><input type="date" value="@(Debt?.FutureAdjustDate?.ToString("yyyy-MM-dd") ?? "")" @onchange="@(async (e) => await UpdateFutureAdjustDate(e))" /></div>
+            <div class="value rate-tied-to-value"><input type="text" value="@(Debt?.RateTiedTo ?? "")" @oninput="@(async (e) => await UpdateRateTiedTo(e))" /></div>
+            <div class="value spread-value"><input type="text" value="@(Debt?.Spread?.ToString() ?? "")" @oninput="@(async (e) => await UpdateSpread(e))" /></div>
+            <div class="value current-rate-value"><input type="text" value="@(Debt?.AdjustableRate?.ToString() ?? "")" @oninput="@(async (e) => await UpdateAdjustableRate(e))" /></div>
+            <div class="value interest-only-value">
+                <select value="@(Debt?.IsInterestOnly == true ? "true" : "false")" @onchange="@(async (e) => await UpdateIsInterestOnly(e))">
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
+            </div>
         </div>
         <div></div>
         <div class="future-assumptions">
@@ -31,10 +38,15 @@
                 </div>
                 <div></div>
                 <div class="lender-values">
-                    <div class="value future-rate-value">@(Debt?.FutureAdjustRate?.ToString("N0") ?? "n/a")</div>
-                    <div class="value min-fut-pmt-value">@(Debt?.MinimumPayment?.ToString("N0") ?? "n/a")</div>
-                    <div class="value pmt-made-value">@(Debt?.FuturePaymentMade?.ToString("N0") ?? "n/a")</div>
-                    <div class="value balloon-pmt-value">@(Debt?.HasBalloonPayment == true ? "Yes" : "No")</div>
+                    <div class="value future-rate-value"><input type="text" value="@(Debt?.FutureAdjustRate?.ToString() ?? "")" @oninput="@(async (e) => await UpdateFutureAdjustRate(e))" /></div>
+                    <div class="value min-fut-pmt-value"><input type="text" value="@(Debt?.MinimumPayment?.ToString() ?? "")" @oninput="@(async (e) => await UpdateMinimumPayment(e))" /></div>
+                    <div class="value pmt-made-value"><input type="text" value="@(Debt?.FuturePaymentMade?.ToString() ?? "")" @oninput="@(async (e) => await UpdateFuturePaymentMade(e))" /></div>
+                    <div class="value balloon-pmt-value">
+                        <select value="@(Debt?.HasBalloonPayment == true ? "true" : "false")" @onchange="@(async (e) => await UpdateHasBalloonPayment(e))">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -55,7 +67,7 @@
 .adjustable-loan-grid-table {
     display: grid;
     padding: 18.5px 20px 20px 20px;
-    grid-template-columns: 140px 20px 75px 15px 1fr;
+    grid-template-columns: 140px 20px 75px 30px 1fr;
     gap: 0px;
 }
 
@@ -118,9 +130,331 @@
     line-height: 130%;
     letter-spacing: 0.24px;
 }
+
+.value select {
+    color: #0775C4;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+    background: #FFF;
+    border: none;
+    padding: 0;
+    width: 100%;
+    min-width: 60px;
+    height: 21px;
+    cursor: pointer;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230775C4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    background-size: 12px;
+    padding-right: 20px;
+}
+
+.value select:focus {
+    outline: none;
+}
+
+.value input {
+    color: #0775C4;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+    background: #FFF;
+    border: none;
+    padding: 0;
+    width: 100%;
+    min-width: 60px;
+    height: 21px;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.value input[type="date"] {
+    color: #0775C4;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: -0.2px;
+    background: #FFF;
+    border: none;
+    padding: 0;
+    width: 100%;
+    min-width: 60px;
+    height: 21px;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.value input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+}
+
+.value input:focus {
+    outline: none;
+}
+
+.value.interest-only-value {
+    width: 60px;
+}
+
+.value.future-adj-date-value {
+    width: 120px;
+}
 </style>
 
 @code {
     [Parameter]
     public Debt? Debt { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        Console.WriteLine($"[AdjustableLoanSection] OnParametersSet called - Debt is null: {Debt == null}");
+        if (Debt != null)
+        {
+            Console.WriteLine($"[AdjustableLoanSection] OnParametersSet - Debt ID: {Debt.DebtId}, Timeframe: '{Debt.Timeframe}'");
+        }
+    }
+
+    private async Task UpdateFutureAdjustDate(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[AdjustableLoanSection] UpdateFutureAdjustDate called - Raw Input: '{e.Value}'");
+        if (Debt != null && DateTime.TryParse(e.Value?.ToString(), out DateTime date))
+        {
+            Debt.FutureAdjustDate = date;
+            Console.WriteLine($"[AdjustableLoanSection] UpdateFutureAdjustDate - Debt ID: {Debt.DebtId}, New Value: {date}");
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[AdjustableLoanSection] UpdateFutureAdjustDate SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AdjustableLoanSection] UpdateFutureAdjustDate ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[AdjustableLoanSection] UpdateFutureAdjustDate - Failed to parse date or Debt is null");
+        }
+    }
+
+    private async Task UpdateRateTiedTo(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[AdjustableLoanSection] UpdateRateTiedTo called - Raw Input: '{e.Value}'");
+        if (Debt != null)
+        {
+            Debt.RateTiedTo = e.Value?.ToString() ?? "";
+            Console.WriteLine($"[AdjustableLoanSection] UpdateRateTiedTo - Debt ID: {Debt.DebtId}, New Value: '{Debt.RateTiedTo}'");
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[AdjustableLoanSection] UpdateRateTiedTo SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AdjustableLoanSection] UpdateRateTiedTo ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[AdjustableLoanSection] UpdateRateTiedTo - Debt is null");
+        }
+    }
+
+    private async Task UpdateSpread(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[AdjustableLoanSection] UpdateSpread called - Raw Input: '{e.Value}'");
+        if (Debt != null && decimal.TryParse(e.Value?.ToString(), out decimal value))
+        {
+            Debt.Spread = value;
+            Console.WriteLine($"[AdjustableLoanSection] UpdateSpread - Debt ID: {Debt.DebtId}, New Value: {value}");
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[AdjustableLoanSection] UpdateSpread SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AdjustableLoanSection] UpdateSpread ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[AdjustableLoanSection] UpdateSpread - Failed to parse decimal or Debt is null");
+        }
+    }
+
+    private async Task UpdateAdjustableRate(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[AdjustableLoanSection] UpdateAdjustableRate called - Raw Input: '{e.Value}'");
+        if (Debt != null && decimal.TryParse(e.Value?.ToString(), out decimal value))
+        {
+            Debt.AdjustableRate = value;
+            Console.WriteLine($"[AdjustableLoanSection] UpdateAdjustableRate - Debt ID: {Debt.DebtId}, New Value: {value}");
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[AdjustableLoanSection] UpdateAdjustableRate SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AdjustableLoanSection] UpdateAdjustableRate ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[AdjustableLoanSection] UpdateAdjustableRate - Failed to parse decimal or Debt is null");
+        }
+    }
+
+    private async Task UpdateIsInterestOnly(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[AdjustableLoanSection] UpdateIsInterestOnly called - Raw Input: '{e.Value}'");
+        if (Debt != null)
+        {
+            bool newValue = e.Value?.ToString() == "true";
+            Debt.IsInterestOnly = newValue;
+            Console.WriteLine($"[AdjustableLoanSection] UpdateIsInterestOnly - Debt ID: {Debt.DebtId}, New Value: {newValue}");
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[AdjustableLoanSection] UpdateIsInterestOnly SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AdjustableLoanSection] UpdateIsInterestOnly ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[AdjustableLoanSection] UpdateIsInterestOnly - Debt is null");
+        }
+    }
+
+    private async Task UpdateFutureAdjustRate(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[AdjustableLoanSection] UpdateFutureAdjustRate called - Raw Input: '{e.Value}'");
+        if (Debt != null && decimal.TryParse(e.Value?.ToString(), out decimal value))
+        {
+            Debt.FutureAdjustRate = value;
+            Console.WriteLine($"[AdjustableLoanSection] UpdateFutureAdjustRate - Debt ID: {Debt.DebtId}, New Value: {value}");
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[AdjustableLoanSection] UpdateFutureAdjustRate SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AdjustableLoanSection] UpdateFutureAdjustRate ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[AdjustableLoanSection] UpdateFutureAdjustRate - Failed to parse decimal or Debt is null");
+        }
+    }
+
+    private async Task UpdateMinimumPayment(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[AdjustableLoanSection] UpdateMinimumPayment called - Raw Input: '{e.Value}'");
+        if (Debt != null && decimal.TryParse(e.Value?.ToString(), out decimal value))
+        {
+            Debt.MinimumPayment = value;
+            Console.WriteLine($"[AdjustableLoanSection] UpdateMinimumPayment - Debt ID: {Debt.DebtId}, New Value: {value}");
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[AdjustableLoanSection] UpdateMinimumPayment SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AdjustableLoanSection] UpdateMinimumPayment ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[AdjustableLoanSection] UpdateMinimumPayment - Failed to parse decimal or Debt is null");
+        }
+    }
+
+    private async Task UpdateFuturePaymentMade(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[AdjustableLoanSection] UpdateFuturePaymentMade called - Raw Input: '{e.Value}'");
+        if (Debt != null && decimal.TryParse(e.Value?.ToString(), out decimal value))
+        {
+            Debt.FuturePaymentMade = value;
+            Console.WriteLine($"[AdjustableLoanSection] UpdateFuturePaymentMade - Debt ID: {Debt.DebtId}, New Value: {value}");
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[AdjustableLoanSection] UpdateFuturePaymentMade SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AdjustableLoanSection] UpdateFuturePaymentMade ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[AdjustableLoanSection] UpdateFuturePaymentMade - Failed to parse decimal or Debt is null");
+        }
+    }
+
+    private async Task UpdateHasBalloonPayment(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[AdjustableLoanSection] UpdateHasBalloonPayment called - Raw Input: '{e.Value}'");
+        if (Debt != null)
+        {
+            bool newValue = e.Value?.ToString() == "true";
+            Debt.HasBalloonPayment = newValue;
+            Console.WriteLine($"[AdjustableLoanSection] UpdateHasBalloonPayment - Debt ID: {Debt.DebtId}, New Value: {newValue}");
+            try
+            {
+                await DebtService.UpdateDebtAsync(Debt);
+                Console.WriteLine($"[AdjustableLoanSection] UpdateHasBalloonPayment SUCCESS - Debt ID: {Debt.DebtId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AdjustableLoanSection] UpdateHasBalloonPayment ERROR - Debt ID: {Debt.DebtId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[AdjustableLoanSection] UpdateHasBalloonPayment - Debt is null");
+        }
+    }
 }

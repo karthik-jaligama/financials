@@ -167,10 +167,20 @@
         }
     }
 
-    private void UpdateTimeframe(Saving saving, string value)
+    private async Task UpdateTimeframe(Saving saving, string value)
     {
+        Console.WriteLine($"[SavingsTable] UpdateTimeframe called - Saving ID: {saving.Id}, Old Value: '{saving.Timeframe}', New Value: '{value}'");
         saving.Timeframe = value;
-        // Add any additional logic for updating the saving
+        try
+        {
+            await SavingsService.UpdateSavingAsync(saving);
+            Console.WriteLine($"[SavingsTable] UpdateTimeframe SUCCESS - Saving ID: {saving.Id} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[SavingsTable] UpdateTimeframe ERROR - Saving ID: {saving.Id}, Error: {ex.Message}");
+        }
+        StateHasChanged();
     }
 
     private void SelectSaving(Saving saving)
@@ -219,7 +229,7 @@
         return savings.Where(s => taxFreeCategories.Contains(s.Category)).Sum(s => s.Value);
     }
 
-    private void OnIncomesSelectionChanged(List<int> selectedIndices)
+    private async Task OnIncomesSelectionChanged(List<int> selectedIndices)
     {
         // Update the associated incomes based on selection
         allAssociatedIncomes = selectedIndices
@@ -231,12 +241,13 @@
         if (selectedSaving != null)
         {
             selectedSaving.AssociatedIncomes = selectedIndices.ToList();
+            await SavingsService.UpdateSavingAsync(selectedSaving);
         }
         
         StateHasChanged();
     }
 
-    private void OnAccountsSelectionChanged(List<int> selectedIndices)
+    private async Task OnAccountsSelectionChanged(List<int> selectedIndices)
     {
         // Update the associated accounts based on selection
         allAssociatedAccounts = selectedIndices
@@ -248,6 +259,7 @@
         if (selectedSaving != null)
         {
             selectedSaving.AssociatedAssets = selectedIndices.ToList();
+            await SavingsService.UpdateSavingAsync(selectedSaving);
         }
         
         StateHasChanged();

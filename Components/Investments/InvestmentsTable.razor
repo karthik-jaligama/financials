@@ -8,6 +8,7 @@
 @inject DebtService DebtService
 @inject AssetService AssetService
 @inject SavingsService SavingsService
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 
 <link rel="stylesheet" href="/investments-table.css" />
@@ -75,9 +76,9 @@
                 
                 <div class="investment-firm-section">
                     <div class="firm-input-container">
-                        <input type="text" class="firm-input" placeholder="Enter Investment Firm" />
+                        <input type="text" class="firm-input" placeholder="Enter Investment Firm" value="@(selectedInvestment?.Firm ?? "")" @oninput="@(async (e) => await UpdateFirm(e))" />
                         <div class="checkbox-container">
-                            <input type="checkbox" class="outside-investment-checkbox" checked />
+                            <input type="checkbox" class="outside-investment-checkbox" checked="@(selectedInvestment?.Outside ?? false)" @onchange="@(async (e) => await UpdateOutside(e))" />
                             <span class="checkbox-label">(Outside Investment)</span>
                         </div>
                     </div>
@@ -93,29 +94,41 @@
                         <div class="equation-breakdown">
                             <div class="breakdown-item">
                                 <span class="breakdown-label">Pre-tax</span>
-                                <div class="breakdown-input">
-                                    <NumberInput Value="@preTaxDecimal" ValueChanged="@(v => preTaxDecimal = v)" />
-                                </div>
+                                <input type="text" 
+                                       class="breakdown-input" 
+                                       value="@(preTaxDecimal?.ToString("N0") ?? "0")" 
+                                       @oninput="HandleNumberInput"
+                                       @onchange="@(async (e) => await UpdatePreTaxValueFromInput(e))" 
+                                       @onblur="HandleInputBlur" />
                             </div>
                             <span class="plus"></span>
                             <div class="breakdown-item">
                                 <span class="breakdown-label">Roth</span>
-                                <div class="breakdown-input">
-                                    <NumberInput Value="@rothDecimal" ValueChanged="@(v => rothDecimal = v)" />
-                                </div>
+                                <input type="text" 
+                                       class="breakdown-input" 
+                                       value="@(rothDecimal?.ToString("N0") ?? "0")" 
+                                       @oninput="HandleNumberInput"
+                                       @onchange="@(async (e) => await UpdateRothValueFromInput(e))" 
+                                       @onblur="HandleInputBlur" />
                             </div>
                             <span class="plus"></span>
                             <div class="breakdown-item">
                                 <span class="breakdown-label">After-tax</span>
-                                <div class="breakdown-input">
-                                    <NumberInput Value="@afterTaxDecimal" ValueChanged="@(v => afterTaxDecimal = v)" />
-                                </div>
+                                <input type="text" 
+                                       class="breakdown-input" 
+                                       value="@(afterTaxDecimal?.ToString("N0") ?? "0")" 
+                                       @oninput="HandleNumberInput"
+                                       @onchange="@(async (e) => await UpdateAfterTaxValueFromInput(e))" 
+                                       @onblur="HandleInputBlur" />
                             </div>
                             <div class="breakdown-item">
                                 <span class="breakdown-label tax-paid-label">Tax-Paid</span>
-                                <div class="breakdown-input tax-paid">
-                                    <NumberInput Value="@taxPaidDecimal" ValueChanged="@(v => taxPaidDecimal = v)" />
-                                </div>
+                                <input type="text" 
+                                       class="breakdown-input tax-paid" 
+                                       value="@(taxPaidDecimal?.ToString("N0") ?? "0")" 
+                                       @oninput="HandleNumberInput"
+                                       @onchange="@(async (e) => await UpdateTaxPaidValueFromInput(e))" 
+                                       @onblur="HandleInputBlur" />
                             </div>
                         </div>
                     </div>
@@ -192,10 +205,10 @@
     private string componentKey = Guid.NewGuid().ToString();
     
     // Sum total breakdown values
-    private decimal? preTaxDecimal = 1000000;
-    private decimal? rothDecimal = 300000;
-    private decimal? afterTaxDecimal = 200000;
-    private decimal? taxPaidDecimal = 50000;
+    private decimal? preTaxDecimal;
+    private decimal? rothDecimal;
+    private decimal? afterTaxDecimal;
+    private decimal? taxPaidDecimal;
     
     private decimal sumTotal => CalculateSumTotal();
 
@@ -260,6 +273,7 @@
         // Load associated items for the first investment
         if (selectedInvestment != null)
         {
+            LoadBreakdownValuesFromInvestment(selectedInvestment);
             LoadAssociatedItemsForInvestment(selectedInvestment);
         }
         else
@@ -271,27 +285,71 @@
         }
     }
 
-    private void UpdateTimeframe(Investment investment, string value)
+    private async Task UpdateTimeframe(Investment investment, string value)
     {
+        Console.WriteLine($"[InvestmentsTable] UpdateTimeframe called - Investment ID: {investment.InvestmentId}, Old Value: '{investment.Timeframe}', New Value: '{value}'");
         investment.Timeframe = value;
+        try
+        {
+            await InvestmentService.UpdateInvestmentAsync(investment);
+            Console.WriteLine($"[InvestmentsTable] UpdateTimeframe SUCCESS - Investment ID: {investment.InvestmentId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateTimeframe ERROR - Investment ID: {investment.InvestmentId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
     }
 
-    private void UpdateOwner(Investment investment, string value)
+    private async Task UpdateOwner(Investment investment, string value)
     {
+        Console.WriteLine($"[InvestmentsTable] UpdateOwner called - Investment ID: {investment.InvestmentId}, Old Value: '{investment.Owner}', New Value: '{value}'");
         investment.Owner = value;
+        try
+        {
+            await InvestmentService.UpdateInvestmentAsync(investment);
+            Console.WriteLine($"[InvestmentsTable] UpdateOwner SUCCESS - Investment ID: {investment.InvestmentId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateOwner ERROR - Investment ID: {investment.InvestmentId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
     }
 
-    private void UpdateCategory(Investment investment, string value)
+    private async Task UpdateCategory(Investment investment, string value)
     {
+        Console.WriteLine($"[InvestmentsTable] UpdateCategory called - Investment ID: {investment.InvestmentId}, Old Value: '{investment.Category}', New Value: '{value}'");
         investment.Category = value;
+        try
+        {
+            await InvestmentService.UpdateInvestmentAsync(investment);
+            Console.WriteLine($"[InvestmentsTable] UpdateCategory SUCCESS - Investment ID: {investment.InvestmentId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateCategory ERROR - Investment ID: {investment.InvestmentId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
     }
 
     private void SelectInvestment(Investment investment)
     {
         selectedInvestment = investment;
         
+        // Load the breakdown values from the investment
+        LoadBreakdownValuesFromInvestment(investment);
+        
         // Load associated items for the selected investment
         LoadAssociatedItemsForInvestment(investment);
+    }
+
+    private void LoadBreakdownValuesFromInvestment(Investment investment)
+    {
+        preTaxDecimal = investment.PreTax;
+        rothDecimal = investment.Roth;
+        afterTaxDecimal = investment.AfterTax;
+        taxPaidDecimal = investment.TaxPaid;
     }
 
     private void LoadAssociatedItemsForInvestment(Investment investment)
@@ -331,8 +389,257 @@
         return preTax + roth + afterTax - taxPaid;
     }
 
-    private void OnDebtsSelectionChanged(List<int> selectedIndices)
+    private async Task UpdatePreTaxValue(decimal? value)
     {
+        Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValue called - Raw Input: '{value}'");
+        if (selectedInvestment != null)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValue - Investment ID: {selectedInvestment.InvestmentId}, Old Value: {selectedInvestment.PreTax}, New Value: {value}");
+            selectedInvestment.PreTax = value;
+            preTaxDecimal = value; // Update local variable for UI display
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValue SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValue ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValue - selectedInvestment is null");
+        }
+    }
+
+    private async Task UpdateRothValue(decimal? value)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateRothValue called - Raw Input: '{value}'");
+        if (selectedInvestment != null)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateRothValue - Investment ID: {selectedInvestment.InvestmentId}, Old Value: {selectedInvestment.Roth}, New Value: {value}");
+            selectedInvestment.Roth = value;
+            rothDecimal = value; // Update local variable for UI display
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] UpdateRothValue SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdateRothValue ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateRothValue - selectedInvestment is null");
+        }
+    }
+
+    private async Task UpdateAfterTaxValue(decimal? value)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateAfterTaxValue called - Raw Input: '{value}'");
+        if (selectedInvestment != null)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateAfterTaxValue - Investment ID: {selectedInvestment.InvestmentId}, Old Value: {selectedInvestment.AfterTax}, New Value: {value}");
+            selectedInvestment.AfterTax = value;
+            afterTaxDecimal = value; // Update local variable for UI display
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] UpdateAfterTaxValue SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdateAfterTaxValue ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateAfterTaxValue - selectedInvestment is null");
+        }
+    }
+
+    private async Task UpdateTaxPaidValue(decimal? value)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateTaxPaidValue called - Raw Input: '{value}'");
+        if (selectedInvestment != null)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateTaxPaidValue - Investment ID: {selectedInvestment.InvestmentId}, Old Value: {selectedInvestment.TaxPaid}, New Value: {value}");
+            selectedInvestment.TaxPaid = value;
+            taxPaidDecimal = value; // Update local variable for UI display
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] UpdateTaxPaidValue SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdateTaxPaidValue ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateTaxPaidValue - selectedInvestment is null");
+        }
+    }
+
+    // @onchange event handlers for immediate database updates
+    private async Task UpdatePreTaxValueFromInput(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput called - Raw Input: '{e.Value}'");
+        
+        Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - selectedInvestment is null: {selectedInvestment == null}");
+        if (selectedInvestment != null)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - selectedInvestment.InvestmentId: {selectedInvestment.InvestmentId}");
+        }
+        
+        string inputString = e.Value?.ToString() ?? "";
+        Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - Input string: '{inputString}'");
+        
+        // Try parsing with different methods
+        bool parseSuccess = decimal.TryParse(inputString, out decimal value);
+        Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - Parse success: {parseSuccess}, Parsed value: {value}");
+        
+        if (!parseSuccess)
+        {
+            // Try removing commas and parsing again
+            string cleanInput = inputString.Replace(",", "").Replace("$", "").Trim();
+            Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - Clean input: '{cleanInput}'");
+            parseSuccess = decimal.TryParse(cleanInput, out value);
+            Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - Clean parse success: {parseSuccess}, Parsed value: {value}");
+        }
+        
+        if (selectedInvestment != null && parseSuccess)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - Investment ID: {selectedInvestment.InvestmentId}, Old Value: {selectedInvestment.PreTax}, New Value: {value}");
+            
+            // Get the current value from database before update
+            var dbInvestmentBefore = await InvestmentService.GetInvestmentByIdAsync(selectedInvestment.InvestmentId);
+            Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - DB Value BEFORE update: {dbInvestmentBefore?.PreTax}");
+            
+            selectedInvestment.PreTax = value;
+            preTaxDecimal = value; // Update local variable for UI display
+            
+            Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - selectedInvestment.PreTax after assignment: {selectedInvestment.PreTax}");
+            
+            try
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - About to call InvestmentService.UpdateInvestmentAsync");
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+                
+                // Get the value from database after update to verify
+                var dbInvestmentAfter = await InvestmentService.GetInvestmentByIdAsync(selectedInvestment.InvestmentId);
+                Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - DB Value AFTER update: {dbInvestmentAfter?.PreTax}");
+                Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - Update successful: {dbInvestmentAfter?.PreTax == value}");
+                
+                // Force refresh the selected investment from database
+                selectedInvestment = await InvestmentService.GetInvestmentByIdAsync(selectedInvestment.InvestmentId);
+                Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - selectedInvestment refreshed from DB: {selectedInvestment?.PreTax}");
+                
+                // Update the local UI variable
+                preTaxDecimal = selectedInvestment?.PreTax ?? 0;
+                Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - preTaxDecimal updated to: {preTaxDecimal}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+                Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput ERROR - Stack Trace: {ex.StackTrace}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - Failed to parse decimal or selectedInvestment is null");
+            Console.WriteLine($"[InvestmentsTable] UpdatePreTaxValueFromInput - selectedInvestment null: {selectedInvestment == null}, parseSuccess: {parseSuccess}");
+        }
+    }
+
+    private async Task UpdateRothValueFromInput(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateRothValueFromInput called - Raw Input: '{e.Value}'");
+        if (selectedInvestment != null && decimal.TryParse(e.Value?.ToString(), out decimal value))
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateRothValueFromInput - Investment ID: {selectedInvestment.InvestmentId}, Old Value: {selectedInvestment.Roth}, New Value: {value}");
+            selectedInvestment.Roth = value;
+            rothDecimal = value; // Update local variable for UI display
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] UpdateRothValueFromInput SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdateRothValueFromInput ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateRothValueFromInput - Failed to parse decimal or selectedInvestment is null");
+        }
+    }
+
+    private async Task UpdateAfterTaxValueFromInput(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateAfterTaxValueFromInput called - Raw Input: '{e.Value}'");
+        if (selectedInvestment != null && decimal.TryParse(e.Value?.ToString(), out decimal value))
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateAfterTaxValueFromInput - Investment ID: {selectedInvestment.InvestmentId}, Old Value: {selectedInvestment.AfterTax}, New Value: {value}");
+            selectedInvestment.AfterTax = value;
+            afterTaxDecimal = value; // Update local variable for UI display
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] UpdateAfterTaxValueFromInput SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdateAfterTaxValueFromInput ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateAfterTaxValueFromInput - Failed to parse decimal or selectedInvestment is null");
+        }
+    }
+
+    private async Task UpdateTaxPaidValueFromInput(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateTaxPaidValueFromInput called - Raw Input: '{e.Value}'");
+        if (selectedInvestment != null && decimal.TryParse(e.Value?.ToString(), out decimal value))
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateTaxPaidValueFromInput - Investment ID: {selectedInvestment.InvestmentId}, Old Value: {selectedInvestment.TaxPaid}, New Value: {value}");
+            selectedInvestment.TaxPaid = value;
+            taxPaidDecimal = value; // Update local variable for UI display
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] UpdateTaxPaidValueFromInput SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdateTaxPaidValueFromInput ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateTaxPaidValueFromInput - Failed to parse decimal or selectedInvestment is null");
+        }
+    }
+
+    private async Task OnDebtsSelectionChanged(List<int> selectedIndices)
+    {
+        Console.WriteLine($"[InvestmentsTable] OnDebtsSelectionChanged called - Selected Indices: [{string.Join(", ", selectedIndices)}]");
         // Update the associated debts based on selection
         allAssociatedDebts = selectedIndices
             .Where(index => index < allAvailableDebts.Count)
@@ -342,14 +649,29 @@
         // Update the selected investment's associated debts
         if (selectedInvestment != null)
         {
+            Console.WriteLine($"[InvestmentsTable] OnDebtsSelectionChanged - Investment ID: {selectedInvestment.InvestmentId}, Old Associated Debts: [{string.Join(", ", selectedInvestment.AssociatedDebts)}], New: [{string.Join(", ", selectedIndices)}]");
             selectedInvestment.AssociatedDebts = selectedIndices.ToList();
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] OnDebtsSelectionChanged SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] OnDebtsSelectionChanged ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] OnDebtsSelectionChanged - selectedInvestment is null");
         }
         
         StateHasChanged();
     }
 
-    private void OnIncomesSelectionChanged(List<int> selectedIndices)
+    private async Task OnIncomesSelectionChanged(List<int> selectedIndices)
     {
+        Console.WriteLine($"[InvestmentsTable] OnIncomesSelectionChanged called - Selected Indices: [{string.Join(", ", selectedIndices)}]");
         // Update the associated incomes based on selection
         allAssociatedIncomes = selectedIndices
             .Where(index => index < allAvailableIncomes.Count)
@@ -359,14 +681,29 @@
         // Update the selected investment's associated incomes
         if (selectedInvestment != null)
         {
+            Console.WriteLine($"[InvestmentsTable] OnIncomesSelectionChanged - Investment ID: {selectedInvestment.InvestmentId}, Old Associated Incomes: [{string.Join(", ", selectedInvestment.AssociatedIncomes)}], New: [{string.Join(", ", selectedIndices)}]");
             selectedInvestment.AssociatedIncomes = selectedIndices.ToList();
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] OnIncomesSelectionChanged SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] OnIncomesSelectionChanged ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] OnIncomesSelectionChanged - selectedInvestment is null");
         }
         
         StateHasChanged();
     }
 
-    private void OnInsurancesSelectionChanged(List<int> selectedIndices)
+    private async Task OnInsurancesSelectionChanged(List<int> selectedIndices)
     {
+        Console.WriteLine($"[InvestmentsTable] OnInsurancesSelectionChanged called - Selected Indices: [{string.Join(", ", selectedIndices)}]");
         // Update the associated insurances based on selection
         allAssociatedInsurances = selectedIndices
             .Where(index => index < allAvailableInsurances.Count)
@@ -376,7 +713,21 @@
         // Update the selected investment's associated insurances
         if (selectedInvestment != null)
         {
+            Console.WriteLine($"[InvestmentsTable] OnInsurancesSelectionChanged - Investment ID: {selectedInvestment.InvestmentId}, Old Associated Insurances: [{string.Join(", ", selectedInvestment.AssociatedInsurances)}], New: [{string.Join(", ", selectedIndices)}]");
             selectedInvestment.AssociatedInsurances = selectedIndices.ToList();
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] OnInsurancesSelectionChanged SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] OnInsurancesSelectionChanged ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] OnInsurancesSelectionChanged - selectedInvestment is null");
         }
         
         StateHasChanged();
@@ -427,8 +778,148 @@
         return indices;
     }
 
+    private async Task UpdateFirm(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateFirm called - Raw Input: '{e.Value}'");
+        if (selectedInvestment != null)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateFirm - Investment ID: {selectedInvestment.InvestmentId}, Old Value: '{selectedInvestment.Firm}', New Value: '{e.Value}'");
+            selectedInvestment.Firm = e.Value?.ToString() ?? "";
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] UpdateFirm SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdateFirm ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateFirm - selectedInvestment is null");
+        }
+    }
+
+    private async Task UpdateOutside(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateOutside called - Raw Input: '{e.Value}'");
+        if (selectedInvestment != null && bool.TryParse(e.Value?.ToString(), out bool value))
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateOutside - Investment ID: {selectedInvestment.InvestmentId}, Old Value: {selectedInvestment.Outside}, New Value: {value}");
+            selectedInvestment.Outside = value;
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] UpdateOutside SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdateOutside ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateOutside - Failed to parse boolean or selectedInvestment is null");
+        }
+    }
+
     public void Dispose()
     {
         // Cleanup if needed
     }
+
+    // Number input formatting handlers
+    private async Task HandleNumberInput(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[InvestmentsTable] HandleNumberInput called - Raw Input: '{e.Value}'");
+        
+        if (e.Value == null) 
+        {
+            Console.WriteLine($"[InvestmentsTable] HandleNumberInput - Input is null, returning");
+            return;
+        }
+        
+        string input = e.Value.ToString() ?? "";
+        Console.WriteLine($"[InvestmentsTable] HandleNumberInput - Processing input: '{input}'");
+        
+        // Special handling for decimal input
+        if (input.EndsWith("."))
+        {
+            Console.WriteLine($"[InvestmentsTable] HandleNumberInput - Input ends with decimal point, formatting and returning");
+            await JSRuntime.InvokeVoidAsync("formatNumberInput", input);
+            return;
+        }
+
+        // If we're in the middle of typing a decimal number, don't format yet
+        if (input.Contains(".") && !input.EndsWith("."))
+        {
+            string[] parts = input.Split('.');
+            if (parts.Length == 2 && parts[1].Length < 2)
+            {
+                Console.WriteLine($"[InvestmentsTable] HandleNumberInput - Incomplete decimal input, formatting and returning");
+                await JSRuntime.InvokeVoidAsync("formatNumberInput", input);
+                return;
+            }
+        }
+        
+        // Remove any non-numeric characters except decimal point
+        string numericOnly = new string(input.Where(c => char.IsDigit(c) || c == '.').ToArray());
+        Console.WriteLine($"[InvestmentsTable] HandleNumberInput - Numeric only: '{numericOnly}'");
+        
+        if (decimal.TryParse(numericOnly, out decimal result))
+        {
+            Console.WriteLine($"[InvestmentsTable] HandleNumberInput - Parsed decimal: {result}");
+            
+            // Format the number with commas and 2 decimal places only if needed
+            string formatted = FormatNumber(result);
+            Console.WriteLine($"[InvestmentsTable] HandleNumberInput - Formatted: '{formatted}'");
+            
+            // Update the input value using JS interop
+            await JSRuntime.InvokeVoidAsync("formatNumberInput", formatted);
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] HandleNumberInput - Failed to parse as decimal");
+        }
+    }
+
+    private async Task HandleInputBlur(FocusEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("handleInputBlur");
+    }
+
+    private string FormatNumber(decimal value)
+    {
+        // If the decimal part is zero, format without decimals
+        if (value % 1 == 0)
+        {
+            return value.ToString("N0");
+        }
+        return value.ToString("N2");
+    }
 }
+
+<script>
+    window.formatNumberInput = (value) => {
+        const activeElement = document.activeElement;
+        if (activeElement && activeElement.classList.contains('breakdown-input')) {
+            activeElement.value = value;
+        }
+    };
+
+    window.handleInputBlur = () => {
+        const activeElement = document.activeElement;
+        if (activeElement && activeElement.classList.contains('breakdown-input')) {
+            // Set cursor to start of input
+            activeElement.setSelectionRange(0, 0);
+            
+            // If the value ends with a decimal point, remove it
+            if (activeElement.value.endsWith('.')) {
+                activeElement.value = activeElement.value.slice(0, -1);
+            }
+        }
+    };
+</script>

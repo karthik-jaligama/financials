@@ -427,7 +427,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "10563"
+          "Value": "11060"
         },
         {
           "Name": "Content-Type",
@@ -435,22 +435,22 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"jiX3FBw7b6SUBczXQYqkEdunz/pw+o+pRDmbRPNrqlA=\""
+          "Value": "\"Ei+pKVg12ZjfgCjMIw1Q0ZDY2ayHlpKSrIou2pdaFDA=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 06 Oct 2025 14:37:58 GMT"
+          "Value": "Tue, 07 Oct 2025 01:20:27 GMT"
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-jiX3FBw7b6SUBczXQYqkEdunz/pw+o+pRDmbRPNrqlA="
+          "Value": "sha256-Ei+pKVg12ZjfgCjMIw1Q0ZDY2ayHlpKSrIou2pdaFDA="
         }
       ]
     },
     {
-      "Route": "investments-table.qart3ysdib.css",
+      "Route": "investments-table.ybseezpqqf.css",
       "AssetFile": "investments-table.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -464,7 +464,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "10563"
+          "Value": "11060"
         },
         {
           "Name": "Content-Type",
@@ -472,21 +472,21 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"jiX3FBw7b6SUBczXQYqkEdunz/pw+o+pRDmbRPNrqlA=\""
+          "Value": "\"Ei+pKVg12ZjfgCjMIw1Q0ZDY2ayHlpKSrIou2pdaFDA=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 06 Oct 2025 14:37:58 GMT"
+          "Value": "Tue, 07 Oct 2025 01:20:27 GMT"
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "qart3ysdib"
+          "Value": "ybseezpqqf"
         },
         {
           "Name": "integrity",
-          "Value": "sha256-jiX3FBw7b6SUBczXQYqkEdunz/pw+o+pRDmbRPNrqlA="
+          "Value": "sha256-Ei+pKVg12ZjfgCjMIw1Q0ZDY2ayHlpKSrIou2pdaFDA="
         },
         {
           "Name": "label",

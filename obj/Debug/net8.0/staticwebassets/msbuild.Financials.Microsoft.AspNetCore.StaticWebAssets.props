@@ -102,8 +102,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>qart3ysdib</Fingerprint>
-      <Integrity>jiX3FBw7b6SUBczXQYqkEdunz/pw+o+pRDmbRPNrqlA=</Integrity>
+      <Fingerprint>ybseezpqqf</Fingerprint>
+      <Integrity>Ei+pKVg12ZjfgCjMIw1Q0ZDY2ayHlpKSrIou2pdaFDA=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\investments-table.css'))</OriginalItemSpec>
