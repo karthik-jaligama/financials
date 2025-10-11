@@ -1,15 +1,12 @@
 @using Financials.Data.Classes
-@using Financials.Components.Common
-@inject IJSRuntime JSRuntime
-@implements IAsyncDisposable
+@using Microsoft.AspNetCore.Components.Forms
+@rendermode InteractiveServer
 
 <div class="related-files-container">
     <!-- Header -->
     <div class="files-header">
-        <svg class="folder-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-        </svg>
-        <h2 class="files-title">Related Files</h2>
+        <div class="header-icon">📁</div>
+        <h2 class="header-title">Related Files</h2>
     </div>
 
     <!-- Main content area -->
@@ -20,58 +17,96 @@
         </div>
 
         <!-- Files Display -->
-        @if (files.Any())
+        @if (Files.Any())
         {
             <div class="files-display">
-                @foreach (var file in files)
+                @foreach (var file in Files)
                 {
-                    <FileItem File="@file" OnRemove="HandleRemoveFile" />
+                    <FileItem FileData="file" 
+                              OnRemove="(id) => HandleRemoveFile(id)" 
+                              OnFileUpdated="HandleFileUpdated" />
                 }
             </div>
         }
     </div>
 
     <!-- Instructions -->
-    @if (files.Any())
+    @if (Files.Any())
     {
-        <div class="files-instructions">
+        <div class="instructions">
             Double-click any file to open it
         </div>
     }
 </div>
 
-@code {
-    private List<FileData> files = new();
 
-    private Task HandleFilesAdded(FileData[] newFiles)
+@code {
+    private List<FileData> Files = new();
+
+    private async Task HandleFilesAdded(IBrowserFile[] files)
     {
-        foreach (var file in newFiles)
+        foreach (var file in files)
         {
-            files.Add(file);
+            var fileData = new FileData
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = file.Name,
+                ContentType = file.ContentType,
+                Size = file.Size,
+                UploadedAt = DateTime.UtcNow
+            };
+
+            // Try to read file content into memory, but handle cases where it's not supported
+            try
+            {
+                using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10MB limit
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                fileData.Content = memoryStream.ToArray();
+            }
+            catch (NotImplementedException)
+            {
+                // This is a MockBrowserFile (from drag-and-drop), so we don't have actual content
+                // Just store the metadata - the file reference is enough
+                fileData.Content = null;
+            }
+            catch (Exception ex)
+            {
+                // Handle other potential errors
+                Console.WriteLine($"Error reading file content: {ex.Message}");
+                fileData.Content = null;
+            }
+
+            Files.Add(fileData);
         }
-        
+
         StateHasChanged();
-        return Task.CompletedTask;
     }
 
-    private async Task HandleRemoveFile(string fileId)
+    private void HandleRemoveFile(string fileId)
     {
-        var fileToRemove = files.FirstOrDefault(f => f.Id == fileId);
+        var fileToRemove = Files.FirstOrDefault(f => f.Id == fileId);
         if (fileToRemove != null)
         {
-            // Clean up the blob URL before removing
-            await JSRuntime.InvokeVoidAsync("revokeBlobUrl", fileToRemove.Url);
-            files.Remove(fileToRemove);
+            Files.Remove(fileToRemove);
             StateHasChanged();
         }
     }
 
-    public async ValueTask DisposeAsync()
+    private void HandleFileUpdated(FileData updatedFile)
     {
-        // Clean up all blob URLs when component is disposed
-        foreach (var file in files)
+        var existingFile = Files.FirstOrDefault(f => f.Id == updatedFile.Id);
+        if (existingFile != null)
         {
-            await JSRuntime.InvokeVoidAsync("revokeBlobUrl", file.Url);
+            // Update the existing file with SharePoint information
+            existingFile.SharePointUrl = updatedFile.SharePointUrl;
+            existingFile.SharePointDriveItemId = updatedFile.SharePointDriveItemId;
+            existingFile.SharePointWebUrl = updatedFile.SharePointWebUrl;
+            existingFile.SharePointShareUrl = updatedFile.SharePointShareUrl;
+            existingFile.SharePointSiteId = updatedFile.SharePointSiteId;
+            existingFile.SharePointLastModified = updatedFile.SharePointLastModified;
+            
+            StateHasChanged();
         }
     }
 }

@@ -36,10 +36,40 @@
                                 Options="@timeframeOptions" 
                                 ValueChanged="@(v => UpdateTimeframe(saving, v))" />
                         </div>
-                        <div class="cell annual-sav">@saving.Value.ToString("N0")</div>
-                        <div class="cell acct-description">@saving.Category</div>
-                        <div class="cell report-description">@saving.ReportDesc</div>
-                        <div class="cell as-of">@(saving.ValueDate?.ToString("MM/dd/yy"))</div>
+                        <div class="cell annual-sav">
+                            <input type="text" 
+                                   class="editable-cell" 
+                                   value="@saving.Value.ToString("N0")" 
+                                   @onchange="@(async (e) => await UpdateValue(saving, e))" />
+                        </div>
+                        <div class="cell acct-description">
+                            <input type="text" 
+                                   class="editable-cell" 
+                                   value="@saving.Category" 
+                                   @onchange="@(async (e) => await UpdateCategory(saving, e))" />
+                        </div>
+                        <div class="cell report-description">
+                            <input type="text" 
+                                   class="editable-cell" 
+                                   value="@saving.ReportDesc" 
+                                   @onchange="@(async (e) => await UpdateReportDesc(saving, e))" />
+                        @if (!string.IsNullOrEmpty(saving.ReportHoverNote))
+                        {
+                            <span class="hover-note-wrapper">
+                                <svg class="hover-note-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2.19996 4.84001C2.19996 3.38165 3.3816 2.20001 4.83996 2.20001H17.16C18.6183 2.20001 19.8 3.38165 19.8 4.84001V14.96C19.8 15.0769 19.7536 15.1886 19.6711 15.2711L15.2711 19.6711C15.1886 19.7536 15.0768 19.8 14.96 19.8H4.83995C3.38159 19.8 2.19995 18.6184 2.19995 17.16L2.19996 4.84001ZM4.83996 3.08001C3.868 3.08001 3.07996 3.86805 3.07996 4.84001V17.16C3.07996 18.132 3.868 18.92 4.83996 18.92H14.52V17.16C14.52 15.7017 15.7016 14.52 17.16 14.52H18.92V4.84001C18.92 3.86805 18.1319 3.08001 17.16 3.08001H4.83996ZM18.2978 15.4H17.16C16.188 15.4 15.4 16.1881 15.4 17.16V18.2978L18.2978 15.4Z" fill="black"/>
+                                </svg>
+                                <span class="hover-note-tooltip">@saving.ReportHoverNote</span>
+                            </span>
+                        }
+                        </div>
+                        <div class="cell as-of">
+                            <input type="text" 
+                                   class="editable-cell date-input" 
+                                   value="@(saving.ValueDate?.ToString("MM/dd/yy") ?? "")" 
+                                   placeholder="mm/dd/yy"
+                                   @onchange="@(async (e) => await UpdateValueDate(saving, e))" />
+                        </div>
                     </div>
                 }
             </div>
@@ -167,6 +197,17 @@
         }
     }
 
+    private async Task ReloadSavings()
+    {
+        // Reload savings from database to ensure all changes (including hover notes) are reflected
+        if (selectedSaving != null)
+        {
+            var selectedSavingId = selectedSaving.Id;
+            savings = await SavingsService.GetSavingsAsync();
+            selectedSaving = savings.FirstOrDefault(s => s.Id == selectedSavingId);
+        }
+    }
+
     private async Task UpdateTimeframe(Saving saving, string value)
     {
         Console.WriteLine($"[SavingsTable] UpdateTimeframe called - Saving ID: {saving.Id}, Old Value: '{saving.Timeframe}', New Value: '{value}'");
@@ -175,10 +216,125 @@
         {
             await SavingsService.UpdateSavingAsync(saving);
             Console.WriteLine($"[SavingsTable] UpdateTimeframe SUCCESS - Saving ID: {saving.Id} updated in database");
+            await ReloadSavings();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[SavingsTable] UpdateTimeframe ERROR - Saving ID: {saving.Id}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateValue(Saving saving, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[SavingsTable] UpdateValue called - Saving ID: {saving.Id}, Raw Input: '{e.Value}'");
+        
+        string inputString = e.Value?.ToString() ?? "";
+        Console.WriteLine($"[SavingsTable] UpdateValue - Input string: '{inputString}'");
+        
+        // Try parsing with different methods
+        bool parseSuccess = decimal.TryParse(inputString, out decimal value);
+        Console.WriteLine($"[SavingsTable] UpdateValue - Parse success: {parseSuccess}, Parsed value: {value}");
+        
+        if (!parseSuccess)
+        {
+            // Try removing commas and parsing again
+            string cleanInput = inputString.Replace(",", "").Replace("$", "").Trim();
+            Console.WriteLine($"[SavingsTable] UpdateValue - Clean input: '{cleanInput}'");
+            parseSuccess = decimal.TryParse(cleanInput, out value);
+            Console.WriteLine($"[SavingsTable] UpdateValue - Clean parse success: {parseSuccess}, Parsed value: {value}");
+        }
+        
+        if (parseSuccess)
+        {
+            Console.WriteLine($"[SavingsTable] UpdateValue - Saving ID: {saving.Id}, Old Value: {saving.Value}, New Value: {value}");
+            saving.Value = value;
+            try
+            {
+                await SavingsService.UpdateSavingAsync(saving);
+                Console.WriteLine($"[SavingsTable] UpdateValue SUCCESS - Saving ID: {saving.Id} updated in database");
+                await ReloadSavings();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[SavingsTable] UpdateValue ERROR - Saving ID: {saving.Id}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[SavingsTable] UpdateValue - Failed to parse decimal value");
+        }
+    }
+
+    private async Task UpdateCategory(Saving saving, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[SavingsTable] UpdateCategory called - Saving ID: {saving.Id}, Old Value: '{saving.Category}', New Value: '{e.Value}'");
+        saving.Category = e.Value?.ToString() ?? "";
+        try
+        {
+            await SavingsService.UpdateSavingAsync(saving);
+            Console.WriteLine($"[SavingsTable] UpdateCategory SUCCESS - Saving ID: {saving.Id} updated in database");
+            await ReloadSavings();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[SavingsTable] UpdateCategory ERROR - Saving ID: {saving.Id}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateReportDesc(Saving saving, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[SavingsTable] UpdateReportDesc called - Saving ID: {saving.Id}, Old Value: '{saving.ReportDesc}', New Value: '{e.Value}'");
+        saving.ReportDesc = e.Value?.ToString() ?? "";
+        try
+        {
+            await SavingsService.UpdateSavingAsync(saving);
+            Console.WriteLine($"[SavingsTable] UpdateReportDesc SUCCESS - Saving ID: {saving.Id} updated in database");
+            await ReloadSavings();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[SavingsTable] UpdateReportDesc ERROR - Saving ID: {saving.Id}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateValueDate(Saving saving, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[SavingsTable] UpdateValueDate called - Saving ID: {saving.Id}, Raw Input: '{e.Value}'");
+        
+        string inputString = e.Value?.ToString() ?? "";
+        if (string.IsNullOrEmpty(inputString))
+        {
+            saving.ValueDate = null;
+        }
+        else if (DateTime.TryParseExact(inputString, "MM/dd/yy", null, System.Globalization.DateTimeStyles.None, out DateTime valueDate))
+        {
+            Console.WriteLine($"[SavingsTable] UpdateValueDate - Saving ID: {saving.Id}, Old Value: {saving.ValueDate}, New Value: {valueDate}");
+            saving.ValueDate = valueDate;
+        }
+        else if (DateTime.TryParse(inputString, out valueDate))
+        {
+            Console.WriteLine($"[SavingsTable] UpdateValueDate - Saving ID: {saving.Id}, Old Value: {saving.ValueDate}, New Value: {valueDate} (fallback parse)");
+            saving.ValueDate = valueDate;
+        }
+        else
+        {
+            Console.WriteLine($"[SavingsTable] UpdateValueDate - Failed to parse date value");
+            return;
+        }
+        
+        try
+        {
+            await SavingsService.UpdateSavingAsync(saving);
+            Console.WriteLine($"[SavingsTable] UpdateValueDate SUCCESS - Saving ID: {saving.Id} updated in database");
+            await ReloadSavings();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[SavingsTable] UpdateValueDate ERROR - Saving ID: {saving.Id}, Error: {ex.Message}");
         }
         StateHasChanged();
     }
@@ -242,6 +398,7 @@
         {
             selectedSaving.AssociatedIncomes = selectedIndices.ToList();
             await SavingsService.UpdateSavingAsync(selectedSaving);
+            await ReloadSavings();
         }
         
         StateHasChanged();
@@ -260,6 +417,7 @@
         {
             selectedSaving.AssociatedAssets = selectedIndices.ToList();
             await SavingsService.UpdateSavingAsync(selectedSaving);
+            await ReloadSavings();
         }
         
         StateHasChanged();
@@ -300,3 +458,6 @@
         // Cleanup if needed
     }
 }
+
+<script src="/js/input-formatting.js"></script>
+<script src="/js/tooltip-positioning.js"></script>

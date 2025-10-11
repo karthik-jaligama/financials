@@ -9,6 +9,7 @@ namespace Financials.Data.Classes
         public decimal Value { get; set; }
         public string Category { get; set; } = "";
         public string ReportDesc { get; set; } = "";
+        public string? ReportHoverNote { get; set; }
         public DateTime? ValueDate { get; set; }
         public string? Notes { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;

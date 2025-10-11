@@ -44,15 +44,40 @@
                                 Options="@ownerOptions" 
                                 ValueChanged="@(v => UpdateOwner(asset, v))" />
                         </div>
-                        <div class="cell asset-value">@asset.Value.ToString("N0")</div>
+                        <div class="cell asset-value">
+                            <input type="text" 
+                                   class="editable-cell" 
+                                   value="@asset.Value.ToString("N0")" 
+                                   @onchange="@(async (e) => await UpdateValue(asset, e))" />
+                        </div>
                         <div class="cell category">
                             <CustomDropdown 
                                 Value="@asset.Category" 
                                 Options="@categoryOptions" 
                                 ValueChanged="@(v => UpdateCategory(asset, v))" />
                         </div>
-                        <div class="cell report-description">@asset.ReportDesc</div>
-                        <div class="cell as-of">@(asset.ValueDate?.ToString("MM/dd/yy"))</div>
+                        <div class="cell report-description">
+                            <input type="text" 
+                                   class="editable-cell" 
+                                   value="@(asset.ReportDesc ?? "")" 
+                                   @onchange="@(async (e) => await UpdateReportDesc(asset, e))" />
+                        @if (!string.IsNullOrEmpty(asset.ReportHoverNote))
+                        {
+                            <span class="hover-note-wrapper">
+                                <svg class="hover-note-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2.19996 4.84001C2.19996 3.38165 3.3816 2.20001 4.83996 2.20001H17.16C18.6183 2.20001 19.8 3.38165 19.8 4.84001V14.96C19.8 15.0769 19.7536 15.1886 19.6711 15.2711L15.2711 19.6711C15.1886 19.7536 15.0768 19.8 14.96 19.8H4.83995C3.38159 19.8 2.19995 18.6184 2.19995 17.16L2.19996 4.84001ZM4.83996 3.08001C3.868 3.08001 3.07996 3.86805 3.07996 4.84001V17.16C3.07996 18.132 3.868 18.92 4.83996 18.92H14.52V17.16C14.52 15.7017 15.7016 14.52 17.16 14.52H18.92V4.84001C18.92 3.86805 18.1319 3.08001 17.16 3.08001H4.83996ZM18.2978 15.4H17.16C16.188 15.4 15.4 16.1881 15.4 17.16V18.2978L18.2978 15.4Z" fill="black"/>
+                                </svg>
+                                <span class="hover-note-tooltip">@asset.ReportHoverNote</span>
+                            </span>
+                        }
+                        </div>
+                        <div class="cell as-of">
+                            <input type="text" 
+                                   class="editable-cell date-input" 
+                                   value="@(asset.ValueDate?.ToString("MM/dd/yy") ?? "")" 
+                                   placeholder="mm/dd/yy"
+                                   @onchange="@(async (e) => await UpdateValueDate(asset, e))" />
+                        </div>
                     </div>
                 }
             </div>
@@ -78,7 +103,7 @@
                     <Notes Note="@selectedAsset.Notes" Width="728px" />
 
                     <div style="margin: 30px;">
-                        <PurchaseDetailsSection Asset="@selectedAsset" />
+                        <PurchaseDetailsSection Asset="@selectedAsset" OnAssetUpdated="@HandleAssetUpdated" />
                     </div>
 
                 </div>
@@ -184,6 +209,23 @@
         }
     }
 
+    private async Task ReloadAssets()
+    {
+        // Reload assets from database to ensure all changes (including hover notes) are reflected
+        if (selectedAsset != null)
+        {
+            var selectedAssetId = selectedAsset.AssetId;
+            assets = await AssetService.GetAssetsAsync();
+            selectedAsset = assets.FirstOrDefault(a => a.AssetId == selectedAssetId);
+        }
+    }
+
+    private async Task HandleAssetUpdated()
+    {
+        await ReloadAssets();
+        StateHasChanged();
+    }
+
     private async Task UpdateTimeframe(Asset asset, string value)
     {
         Console.WriteLine($"[AssetsTable] UpdateTimeframe called - Asset ID: {asset.AssetId}, Old Value: '{asset.Timeframe}', New Value: '{value}'");
@@ -192,6 +234,7 @@
         {
             await AssetService.UpdateAssetAsync(asset);
             Console.WriteLine($"[AssetsTable] UpdateTimeframe SUCCESS - Asset ID: {asset.AssetId} updated in database");
+            await ReloadAssets();
         }
         catch (Exception ex)
         {
@@ -208,6 +251,7 @@
         {
             await AssetService.UpdateAssetAsync(asset);
             Console.WriteLine($"[AssetsTable] UpdateOwner SUCCESS - Asset ID: {asset.AssetId} updated in database");
+            await ReloadAssets();
         }
         catch (Exception ex)
         {
@@ -224,10 +268,108 @@
         {
             await AssetService.UpdateAssetAsync(asset);
             Console.WriteLine($"[AssetsTable] UpdateCategory SUCCESS - Asset ID: {asset.AssetId} updated in database");
+            await ReloadAssets();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[AssetsTable] UpdateCategory ERROR - Asset ID: {asset.AssetId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateValue(Asset asset, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[AssetsTable] UpdateValue called - Asset ID: {asset.AssetId}, Raw Input: '{e.Value}'");
+        
+        string inputString = e.Value?.ToString() ?? "";
+        Console.WriteLine($"[AssetsTable] UpdateValue - Input string: '{inputString}'");
+        
+        // Try parsing with different methods
+        bool parseSuccess = decimal.TryParse(inputString, out decimal value);
+        Console.WriteLine($"[AssetsTable] UpdateValue - Parse success: {parseSuccess}, Parsed value: {value}");
+        
+        if (!parseSuccess)
+        {
+            // Try removing commas and parsing again
+            string cleanInput = inputString.Replace(",", "").Replace("$", "").Trim();
+            Console.WriteLine($"[AssetsTable] UpdateValue - Clean input: '{cleanInput}'");
+            parseSuccess = decimal.TryParse(cleanInput, out value);
+            Console.WriteLine($"[AssetsTable] UpdateValue - Clean parse success: {parseSuccess}, Parsed value: {value}");
+        }
+        
+        if (parseSuccess)
+        {
+            Console.WriteLine($"[AssetsTable] UpdateValue - Asset ID: {asset.AssetId}, Old Value: {asset.Value}, New Value: {value}");
+            asset.Value = value;
+            try
+            {
+                await AssetService.UpdateAssetAsync(asset);
+                Console.WriteLine($"[AssetsTable] UpdateValue SUCCESS - Asset ID: {asset.AssetId} updated in database");
+                await ReloadAssets();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AssetsTable] UpdateValue ERROR - Asset ID: {asset.AssetId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[AssetsTable] UpdateValue - Failed to parse decimal value");
+        }
+    }
+
+    private async Task UpdateReportDesc(Asset asset, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[AssetsTable] UpdateReportDesc called - Asset ID: {asset.AssetId}, Old Value: '{asset.ReportDesc}', New Value: '{e.Value}'");
+        asset.ReportDesc = e.Value?.ToString() ?? "";
+        try
+        {
+            await AssetService.UpdateAssetAsync(asset);
+            Console.WriteLine($"[AssetsTable] UpdateReportDesc SUCCESS - Asset ID: {asset.AssetId} updated in database");
+            await ReloadAssets();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AssetsTable] UpdateReportDesc ERROR - Asset ID: {asset.AssetId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateValueDate(Asset asset, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[AssetsTable] UpdateValueDate called - Asset ID: {asset.AssetId}, Raw Input: '{e.Value}'");
+        
+        string inputString = e.Value?.ToString() ?? "";
+        if (string.IsNullOrEmpty(inputString))
+        {
+            asset.ValueDate = null;
+        }
+        else if (DateTime.TryParseExact(inputString, "MM/dd/yy", null, System.Globalization.DateTimeStyles.None, out DateTime valueDate))
+        {
+            Console.WriteLine($"[AssetsTable] UpdateValueDate - Asset ID: {asset.AssetId}, Old Value: {asset.ValueDate}, New Value: {valueDate}");
+            asset.ValueDate = valueDate;
+        }
+        else if (DateTime.TryParse(inputString, out valueDate))
+        {
+            Console.WriteLine($"[AssetsTable] UpdateValueDate - Asset ID: {asset.AssetId}, Old Value: {asset.ValueDate}, New Value: {valueDate} (fallback parse)");
+            asset.ValueDate = valueDate;
+        }
+        else
+        {
+            Console.WriteLine($"[AssetsTable] UpdateValueDate - Failed to parse date value");
+            return;
+        }
+        
+        try
+        {
+            await AssetService.UpdateAssetAsync(asset);
+            Console.WriteLine($"[AssetsTable] UpdateValueDate SUCCESS - Asset ID: {asset.AssetId} updated in database");
+            await ReloadAssets();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AssetsTable] UpdateValueDate ERROR - Asset ID: {asset.AssetId}, Error: {ex.Message}");
         }
         StateHasChanged();
     }
@@ -273,6 +415,7 @@
             {
                 await AssetService.UpdateAssetAsync(selectedAsset);
                 Console.WriteLine($"[AssetsTable] OnDebtsSelectionChanged SUCCESS - Asset ID: {selectedAsset.AssetId} updated in database");
+                await ReloadAssets();
             }
             catch (Exception ex)
             {
@@ -301,6 +444,7 @@
             {
                 await AssetService.UpdateAssetAsync(selectedAsset);
                 Console.WriteLine($"[AssetsTable] OnInsurancesSelectionChanged SUCCESS - Asset ID: {selectedAsset.AssetId} updated in database");
+                await ReloadAssets();
             }
             catch (Exception ex)
             {
@@ -345,4 +489,7 @@
     {
         // Cleanup if needed
     }
-} 
+}
+
+<script src="/js/input-formatting.js"></script>
+<script src="/js/tooltip-positioning.js"></script> 

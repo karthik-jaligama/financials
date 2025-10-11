@@ -35,6 +35,7 @@
             @foreach (var investment in investments)
             {
                 <div class="investment-row @(selectedInvestment == investment ? "selected" : "")" 
+                     @key="investment.InvestmentId"
                      @onclick="() => SelectInvestment(investment)">
                     <div class="cell time">
                         <CustomDropdown 
@@ -48,10 +49,40 @@
                             Options="@ownerOptions" 
                             ValueChanged="@(v => UpdateOwner(investment, v))" />
                     </div>
-                    <div class="cell value">@(investment.CurrentValue?.ToString("N0") ?? "n/a")</div>
-                    <div class="cell acct-type">@(investment.AccountType ?? "n/a")</div>
-                    <div class="cell report-description">@(investment.ReportDesc ?? "n/a")</div>
-                    <div class="cell as-of">@(investment.ValueDate?.ToString("MM/dd/yy") ?? "n/a")</div>
+                    <div class="cell value">
+                        <input type="text" 
+                               class="editable-cell" 
+                               value="@(investment.CurrentValue?.ToString("N0") ?? "")" 
+                               @onchange="@(async (e) => await UpdateCurrentValue(investment, e))" />
+                    </div>
+                    <div class="cell acct-type">
+                        <CustomDropdown 
+                            Value="@investment.AccountType" 
+                            Options="@accountTypeOptions" 
+                            ValueChanged="@(v => UpdateAccountTypeDropdown(investment, v))" />
+                    </div>
+                    <div class="cell report-description">
+                        <input type="text" 
+                               class="editable-cell" 
+                               value="@(investment.ReportDesc ?? "")" 
+                               @onchange="@(async (e) => await UpdateReportDesc(investment, e))" />
+                        @if (!string.IsNullOrEmpty(investment.ReportHoverNote))
+                        {
+                            <span class="hover-note-wrapper">
+                                <svg class="hover-note-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2.19996 4.84001C2.19996 3.38165 3.3816 2.20001 4.83996 2.20001H17.16C18.6183 2.20001 19.8 3.38165 19.8 4.84001V14.96C19.8 15.0769 19.7536 15.1886 19.6711 15.2711L15.2711 19.6711C15.1886 19.7536 15.0768 19.8 14.96 19.8H4.83995C3.38159 19.8 2.19995 18.6184 2.19995 17.16L2.19996 4.84001ZM4.83996 3.08001C3.868 3.08001 3.07996 3.86805 3.07996 4.84001V17.16C3.07996 18.132 3.868 18.92 4.83996 18.92H14.52V17.16C14.52 15.7017 15.7016 14.52 17.16 14.52H18.92V4.84001C18.92 3.86805 18.1319 3.08001 17.16 3.08001H4.83996ZM18.2978 15.4H17.16C16.188 15.4 15.4 16.1881 15.4 17.16V18.2978L18.2978 15.4Z" fill="black"/>
+                                </svg>
+                                <span class="hover-note-tooltip">@investment.ReportHoverNote</span>
+                            </span>
+                        }
+                    </div>
+                    <div class="cell as-of">
+                        <input type="text" 
+                               class="editable-cell date-input" 
+                               value="@(investment.ValueDate?.ToString("MM/dd/yy") ?? "")" 
+                               placeholder="mm/dd/yy"
+                               @onchange="@(async (e) => await UpdateValueDate(investment, e))" />
+                    </div>
                 </div>
             }
             <div class="totals-row">
@@ -85,53 +116,89 @@
                 </div>
 
                 <div class="sum-total-section">
-                    <div class="sum-total-container">
-                        <div class="breakdown-item sum-total-item">
-                            <span class="breakdown-label">Sum Total</span>
-                            <input type="text" class="breakdown-input sum-total-input" value="@sumTotal.ToString("N0")" readonly />
+                    @if (IsBasisPanel(selectedInvestment?.AccountType))
+                    {
+                        <!-- Basis Panel -->
+                        <div class="simple-panel-container">
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Basis</span>
+                                <input type="text" 
+                                       class="breakdown-input" 
+                                       value="@(selectedInvestment?.CostBasis?.ToString("N0") ?? "0")" 
+                                       @oninput="HandleNumberInput"
+                                       @onchange="@(async (e) => await UpdateCostBasis(e))" 
+                                       @onblur="HandleInputBlur" />
+                            </div>
+                            <span class="helper-text">(If less than current value)</span>
                         </div>
-                        <span class="equals"></span>
-                        <div class="equation-breakdown">
+                    }
+                    else if (IsIRAPanel(selectedInvestment?.AccountType))
+                    {
+                        <!-- IRA Version Panel -->
+                        <div class="simple-panel-container">
                             <div class="breakdown-item">
-                                <span class="breakdown-label">Pre-tax</span>
+                                <span class="breakdown-label">Tax-Paid</span>
                                 <input type="text" 
                                        class="breakdown-input" 
-                                       value="@(preTaxDecimal?.ToString("N0") ?? "0")" 
-                                       @oninput="HandleNumberInput"
-                                       @onchange="@(async (e) => await UpdatePreTaxValueFromInput(e))" 
-                                       @onblur="HandleInputBlur" />
-                            </div>
-                            <span class="plus"></span>
-                            <div class="breakdown-item">
-                                <span class="breakdown-label">Roth</span>
-                                <input type="text" 
-                                       class="breakdown-input" 
-                                       value="@(rothDecimal?.ToString("N0") ?? "0")" 
-                                       @oninput="HandleNumberInput"
-                                       @onchange="@(async (e) => await UpdateRothValueFromInput(e))" 
-                                       @onblur="HandleInputBlur" />
-                            </div>
-                            <span class="plus"></span>
-                            <div class="breakdown-item">
-                                <span class="breakdown-label">After-tax</span>
-                                <input type="text" 
-                                       class="breakdown-input" 
-                                       value="@(afterTaxDecimal?.ToString("N0") ?? "0")" 
-                                       @oninput="HandleNumberInput"
-                                       @onchange="@(async (e) => await UpdateAfterTaxValueFromInput(e))" 
-                                       @onblur="HandleInputBlur" />
-                            </div>
-                            <div class="breakdown-item">
-                                <span class="breakdown-label tax-paid-label">Tax-Paid</span>
-                                <input type="text" 
-                                       class="breakdown-input tax-paid" 
                                        value="@(taxPaidDecimal?.ToString("N0") ?? "0")" 
                                        @oninput="HandleNumberInput"
                                        @onchange="@(async (e) => await UpdateTaxPaidValueFromInput(e))" 
                                        @onblur="HandleInputBlur" />
                             </div>
+                            <span class="helper-text">After-tax Contributions (If Applicable)</span>
                         </div>
-                    </div>
+                    }
+                    else
+                    {
+                        <!-- Retirement Plan Panel (current full breakdown) -->
+                        <div class="sum-total-container">
+                            <div class="breakdown-item sum-total-item">
+                                <span class="breakdown-label">Sum Total</span>
+                                <input type="text" class="breakdown-input sum-total-input" value="@sumTotal.ToString("N0")" readonly />
+                            </div>
+                            <span class="equals"></span>
+                            <div class="equation-breakdown">
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Pre-tax</span>
+                                    <input type="text" 
+                                           class="breakdown-input" 
+                                           value="@(preTaxDecimal?.ToString("N0") ?? "0")" 
+                                           @oninput="HandleNumberInput"
+                                           @onchange="@(async (e) => await UpdatePreTaxValueFromInput(e))" 
+                                           @onblur="HandleInputBlur" />
+                                </div>
+                                <span class="plus"></span>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">Roth</span>
+                                    <input type="text" 
+                                           class="breakdown-input" 
+                                           value="@(rothDecimal?.ToString("N0") ?? "0")" 
+                                           @oninput="HandleNumberInput"
+                                           @onchange="@(async (e) => await UpdateRothValueFromInput(e))" 
+                                           @onblur="HandleInputBlur" />
+                                </div>
+                                <span class="plus"></span>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label">After-tax</span>
+                                    <input type="text" 
+                                           class="breakdown-input" 
+                                           value="@(afterTaxDecimal?.ToString("N0") ?? "0")" 
+                                           @oninput="HandleNumberInput"
+                                           @onchange="@(async (e) => await UpdateAfterTaxValueFromInput(e))" 
+                                           @onblur="HandleInputBlur" />
+                                </div>
+                                <div class="breakdown-item">
+                                    <span class="breakdown-label tax-paid-label">Tax-Paid</span>
+                                    <input type="text" 
+                                           class="breakdown-input tax-paid" 
+                                           value="@(taxPaidDecimal?.ToString("N0") ?? "0")" 
+                                           @oninput="HandleNumberInput"
+                                           @onchange="@(async (e) => await UpdateTaxPaidValueFromInput(e))" 
+                                           @onblur="HandleInputBlur" />
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
 
 
@@ -202,6 +269,36 @@
         "Crypto",
         "Other"
     };
+    
+    private List<string> accountTypeOptions = new()
+    {
+        "Checking",
+        "Savings",
+        "Brokerage",
+        "IRA",
+        "Roth",
+        "Inherited IRA",
+        "Inherited Roth",
+        "401k",
+        "Solo 401k",
+        "403b",
+        "457b",
+        "SEP",
+        "SIMPLE",
+        "Deferred Comp",
+        "Qual Annuity",
+        "NonQual Annuity",
+        "Living Trust",
+        "529 College",
+        "UTMA, UGMA",
+        "Donor Advised",
+        "Profit-Sharing",
+        "ESPP",
+        "ESOP",
+        "H.S.A.",
+        "Pension Plan"
+    };
+    
     private string componentKey = Guid.NewGuid().ToString();
     
     // Sum total breakdown values
@@ -285,6 +382,17 @@
         }
     }
 
+    private async Task ReloadInvestments()
+    {
+        // Reload investments from database to ensure all changes (including hover notes) are reflected
+        if (selectedInvestment != null)
+        {
+            var selectedInvestmentId = selectedInvestment.InvestmentId;
+            investments = await InvestmentService.GetInvestmentsAsync();
+            selectedInvestment = investments.FirstOrDefault(i => i.InvestmentId == selectedInvestmentId);
+        }
+    }
+
     private async Task UpdateTimeframe(Investment investment, string value)
     {
         Console.WriteLine($"[InvestmentsTable] UpdateTimeframe called - Investment ID: {investment.InvestmentId}, Old Value: '{investment.Timeframe}', New Value: '{value}'");
@@ -293,6 +401,7 @@
         {
             await InvestmentService.UpdateInvestmentAsync(investment);
             Console.WriteLine($"[InvestmentsTable] UpdateTimeframe SUCCESS - Investment ID: {investment.InvestmentId} updated in database");
+            await ReloadInvestments();
         }
         catch (Exception ex)
         {
@@ -309,6 +418,7 @@
         {
             await InvestmentService.UpdateInvestmentAsync(investment);
             Console.WriteLine($"[InvestmentsTable] UpdateOwner SUCCESS - Investment ID: {investment.InvestmentId} updated in database");
+            await ReloadInvestments();
         }
         catch (Exception ex)
         {
@@ -325,10 +435,198 @@
         {
             await InvestmentService.UpdateInvestmentAsync(investment);
             Console.WriteLine($"[InvestmentsTable] UpdateCategory SUCCESS - Investment ID: {investment.InvestmentId} updated in database");
+            await ReloadInvestments();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[InvestmentsTable] UpdateCategory ERROR - Investment ID: {investment.InvestmentId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateCurrentValue(Investment investment, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateCurrentValue called - Investment ID: {investment.InvestmentId}, Raw Input: '{e.Value}'");
+        
+        string inputString = e.Value?.ToString() ?? "";
+        if (string.IsNullOrEmpty(inputString))
+        {
+            investment.CurrentValue = null;
+        }
+        else
+        {
+            // Try parsing with different methods
+            bool parseSuccess = decimal.TryParse(inputString, out decimal value);
+            if (!parseSuccess)
+            {
+                // Try removing commas and parsing again
+                string cleanInput = inputString.Replace(",", "").Replace("$", "").Trim();
+                parseSuccess = decimal.TryParse(cleanInput, out value);
+            }
+            
+            if (parseSuccess)
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdateCurrentValue - Investment ID: {investment.InvestmentId}, Old Value: {investment.CurrentValue}, New Value: {value}");
+                investment.CurrentValue = value;
+            }
+            else
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdateCurrentValue - Failed to parse decimal value");
+                return;
+            }
+        }
+        
+        try
+        {
+            await InvestmentService.UpdateInvestmentAsync(investment);
+            Console.WriteLine($"[InvestmentsTable] UpdateCurrentValue SUCCESS - Investment ID: {investment.InvestmentId} updated in database");
+            await ReloadInvestments();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateCurrentValue ERROR - Investment ID: {investment.InvestmentId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateAccountTypeDropdown(Investment investment, string value)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateAccountTypeDropdown called - Investment ID: {investment.InvestmentId}, Old Value: '{investment.AccountType}', New Value: '{value}'");
+        investment.AccountType = value;
+        try
+        {
+            await InvestmentService.UpdateInvestmentAsync(investment);
+            Console.WriteLine($"[InvestmentsTable] UpdateAccountTypeDropdown SUCCESS - Investment ID: {investment.InvestmentId} updated in database");
+            await ReloadInvestments();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateAccountTypeDropdown ERROR - Investment ID: {investment.InvestmentId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateAccountType(Investment investment, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateAccountType called - Investment ID: {investment.InvestmentId}, Old Value: '{investment.AccountType}', New Value: '{e.Value}'");
+        investment.AccountType = e.Value?.ToString() ?? "";
+        try
+        {
+            await InvestmentService.UpdateInvestmentAsync(investment);
+            Console.WriteLine($"[InvestmentsTable] UpdateAccountType SUCCESS - Investment ID: {investment.InvestmentId} updated in database");
+            await ReloadInvestments();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateAccountType ERROR - Investment ID: {investment.InvestmentId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+    
+    // Helper methods to determine which panel to display
+    private bool IsBasisPanel(string? accountType)
+    {
+        if (string.IsNullOrEmpty(accountType)) return false;
+        
+        var basisTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Checking", "Savings", "Brokerage", "Roth", "Inherited Roth",
+            "Qual Annuity", "NonQual Annuity", "Living Trust", "529 College",
+            "UTMA, UGMA", "Donor Advised", "ESPP", "ESOP", "H.S.A."
+        };
+        
+        return basisTypes.Contains(accountType);
+    }
+    
+    private bool IsIRAPanel(string? accountType)
+    {
+        if (string.IsNullOrEmpty(accountType)) return false;
+        
+        return accountType.Equals("IRA", StringComparison.OrdinalIgnoreCase) ||
+               accountType.Equals("Inherited IRA", StringComparison.OrdinalIgnoreCase);
+    }
+    
+    private async Task UpdateCostBasis(ChangeEventArgs e)
+    {
+        if (selectedInvestment == null) return;
+        
+        string inputString = e.Value?.ToString() ?? "";
+        string cleanInput = inputString.Replace(",", "").Replace("$", "").Trim();
+        
+        if (decimal.TryParse(cleanInput, out decimal value))
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateCostBasis - Investment ID: {selectedInvestment.InvestmentId}, Old Value: {selectedInvestment.CostBasis}, New Value: {value}");
+            selectedInvestment.CostBasis = value;
+            
+            try
+            {
+                await InvestmentService.UpdateInvestmentAsync(selectedInvestment);
+                Console.WriteLine($"[InvestmentsTable] UpdateCostBasis SUCCESS - Investment ID: {selectedInvestment.InvestmentId} updated in database");
+                await ReloadInvestments();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[InvestmentsTable] UpdateCostBasis ERROR - Investment ID: {selectedInvestment.InvestmentId}, Error: {ex.Message}");
+            }
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateCostBasis - Failed to parse decimal value");
+        }
+    }
+
+    private async Task UpdateReportDesc(Investment investment, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateReportDesc called - Investment ID: {investment.InvestmentId}, Old Value: '{investment.ReportDesc}', New Value: '{e.Value}'");
+        investment.ReportDesc = e.Value?.ToString() ?? "";
+        try
+        {
+            await InvestmentService.UpdateInvestmentAsync(investment);
+            Console.WriteLine($"[InvestmentsTable] UpdateReportDesc SUCCESS - Investment ID: {investment.InvestmentId} updated in database");
+            await ReloadInvestments();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateReportDesc ERROR - Investment ID: {investment.InvestmentId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateValueDate(Investment investment, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[InvestmentsTable] UpdateValueDate called - Investment ID: {investment.InvestmentId}, Raw Input: '{e.Value}'");
+        
+        string inputString = e.Value?.ToString() ?? "";
+        if (string.IsNullOrEmpty(inputString))
+        {
+            investment.ValueDate = null;
+        }
+        else if (DateTime.TryParseExact(inputString, "MM/dd/yy", null, System.Globalization.DateTimeStyles.None, out DateTime valueDate))
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateValueDate - Investment ID: {investment.InvestmentId}, Old Value: {investment.ValueDate}, New Value: {valueDate}");
+            investment.ValueDate = valueDate;
+        }
+        else if (DateTime.TryParse(inputString, out valueDate))
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateValueDate - Investment ID: {investment.InvestmentId}, Old Value: {investment.ValueDate}, New Value: {valueDate} (fallback parse)");
+            investment.ValueDate = valueDate;
+        }
+        else
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateValueDate - Failed to parse date value");
+            return;
+        }
+        
+        try
+        {
+            await InvestmentService.UpdateInvestmentAsync(investment);
+            Console.WriteLine($"[InvestmentsTable] UpdateValueDate SUCCESS - Investment ID: {investment.InvestmentId} updated in database");
+            await ReloadInvestments();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[InvestmentsTable] UpdateValueDate ERROR - Investment ID: {investment.InvestmentId}, Error: {ex.Message}");
         }
         StateHasChanged();
     }
@@ -681,7 +979,7 @@
         // Update the selected investment's associated incomes
         if (selectedInvestment != null)
         {
-            Console.WriteLine($"[InvestmentsTable] OnIncomesSelectionChanged - Investment ID: {selectedInvestment.InvestmentId}, Old Associated Incomes: [{string.Join(", ", selectedInvestment.AssociatedIncomes)}], New: [{string.Join(", ", selectedIndices)}]");
+            Console.WriteLine($"[InvestmentsTable] OnIncomesSelectionChanged - Investment ID: {selectedInvestment.InvestmentId}, Old Associated Incomes: [{string.Join(", ", selectedInvestment.AssociatedIncomes ?? new List<int>())}], New: [{string.Join(", ", selectedIndices)}]");
             selectedInvestment.AssociatedIncomes = selectedIndices.ToList();
             try
             {
@@ -923,3 +1221,5 @@
         }
     };
 </script>
+
+<script src="/js/input-formatting.js"></script>

@@ -65,12 +65,6 @@ C:\Users\KarthikJaligama\OneDrive - Kickstand Wealth\Desktop\Financials\obj\Debu
 C:\Users\KarthikJaligama\OneDrive - Kickstand Wealth\Desktop\Financials\obj\Debug\net8.0\Financials.genruntimeconfig.cache
 C:\Users\KarthikJaligama\OneDrive - Kickstand Wealth\Desktop\Financials\obj\Debug\net8.0\ref\Financials.dll
 C:\Users\KarthikJaligama\OneDrive - Kickstand Wealth\Desktop\Financials\obj\Debug\net8.0\scopedcss\Components\Debts\DebtsTable.razor.rz.scp.css
-C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.csproj.AssemblyReference.cache
-C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.AssemblyInfoInputs.cache
-C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.AssemblyInfo.cs
-C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.csproj.CoreCompileInputs.cache
-C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\a9kar\OneDrive\Desktop\Financials\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\a9kar\OneDrive\Desktop\Financials\bin\Debug\net8.0\appsettings.json
 C:\Users\a9kar\OneDrive\Desktop\Financials\bin\Debug\net8.0\Financials.staticwebassets.runtime.json
@@ -242,6 +236,13 @@ C:\Users\a9kar\OneDrive\Desktop\Financials\bin\Debug\net8.0\runtimes\win\lib\net
 C:\Users\a9kar\OneDrive\Desktop\Financials\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\a9kar\OneDrive\Desktop\Financials\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 C:\Users\a9kar\OneDrive\Desktop\Financials\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.csproj.AssemblyReference.cache
+C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.AssemblyInfoInputs.cache
+C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.AssemblyInfo.cs
+C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.csproj.CoreCompileInputs.cache
+C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.sourcelink.json
 C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\scopedcss\bundle\Financials.styles.css
 C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\staticwebassets.development.json
@@ -258,4 +259,3 @@ C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\refint\Financials.dl
 C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.pdb
 C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.genruntimeconfig.cache
 C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\ref\Financials.dll
-C:\Users\a9kar\OneDrive\Desktop\Financials\obj\Debug\net8.0\Financials.sourcelink.json

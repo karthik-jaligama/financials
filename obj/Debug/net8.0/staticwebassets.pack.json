@@ -13,12 +13,8 @@
       "PackagePath": "staticwebassets\\debts-table.css"
     },
     {
-      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\file-dropzone.css",
-      "PackagePath": "staticwebassets\\file-dropzone.css"
-    },
-    {
-      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\file-item.css",
-      "PackagePath": "staticwebassets\\file-item.css"
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\file-manager.css",
+      "PackagePath": "staticwebassets\\file-manager.css"
     },
     {
       "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\investments-table.css",
@@ -29,20 +25,28 @@
       "PackagePath": "staticwebassets\\js\\databaseInit.js"
     },
     {
-      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\js\\fileManager.js",
-      "PackagePath": "staticwebassets\\js\\fileManager.js"
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\js\\file-dropzone.js",
+      "PackagePath": "staticwebassets\\js\\file-dropzone.js"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\js\\input-formatting.js",
+      "PackagePath": "staticwebassets\\js\\input-formatting.js"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\js\\tooltip-positioning.js",
+      "PackagePath": "staticwebassets\\js\\tooltip-positioning.js"
     },
     {
       "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\main-layout.css",
       "PackagePath": "staticwebassets\\main-layout.css"
     },
     {
-      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\related-files.css",
-      "PackagePath": "staticwebassets\\related-files.css"
-    },
-    {
       "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\savings-table.css",
       "PackagePath": "staticwebassets\\savings-table.css"
+    },
+    {
+      "Id": "C:\\Users\\a9kar\\OneDrive\\Desktop\\Financials\\wwwroot\\test-date-input.html",
+      "PackagePath": "staticwebassets\\test-date-input.html"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Financials.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",

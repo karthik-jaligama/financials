@@ -1,0 +1,309 @@
+/* File Manager Components Styles */
+
+/* File Drop Zone */
+.file-drop-zone {
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 48px;
+    text-align: center;
+    background-color: #f9fafb;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-drop-zone:hover {
+    border-color: #9ca3af;
+    background-color: #f3f4f6;
+}
+
+.file-drop-zone.drag-active {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.drop-zone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.drop-icon {
+    font-size: 32px;
+    color: #9ca3af;
+    transition: color 0.2s ease;
+}
+
+.file-drop-zone.drag-active .drop-icon {
+    color: #3b82f6;
+    transform: scale(1.2);
+}
+
+.drop-text {
+    color: #6b7280;
+    font-size: 16px;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* File Item */
+.file-item-container {
+    position: relative;
+    display: inline-block;
+    margin: 8px;
+    transition: transform 0.2s ease;
+}
+
+.file-item-container:hover {
+    transform: translateY(-2px);
+}
+
+.file-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.file-item:hover {
+    opacity: 0.8;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.remove-button {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s ease;
+    z-index: 10;
+    font-weight: bold;
+}
+
+.file-item-container:hover .remove-button {
+    opacity: 1;
+}
+
+.remove-button:hover {
+    background-color: #dc2626;
+    transform: scale(1.1);
+}
+
+.file-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    transition: transform 0.2s ease;
+}
+
+.file-item:hover .file-icon {
+    transform: scale(1.05);
+}
+
+.file-icon.pdf {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+}
+
+.file-icon.image {
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #2563eb;
+}
+
+.file-icon.word {
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #2563eb;
+}
+
+.file-icon.excel {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #16a34a;
+}
+
+.file-icon.default {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    color: #6b7280;
+}
+
+.file-name {
+    font-size: 12px;
+    color: #374151;
+    text-align: center;
+    max-width: 64px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.file-status {
+    margin-top: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sharepoint-linked {
+    color: #0078d4;
+    font-size: 14px;
+    cursor: help;
+}
+
+.link-sharepoint-btn {
+    background: none;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+}
+
+.link-sharepoint-btn:hover {
+    background-color: #f3f4f6;
+}
+
+.link-sharepoint-btn:active {
+    background-color: #e5e7eb;
+}
+
+/* Related Files Container */
+.related-files-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.files-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.header-icon {
+    font-size: 20px;
+    color: #475569;
+}
+
+.header-title {
+    color: #334155;
+    font-weight: 600;
+    font-size: 18px;
+    margin: 0;
+}
+
+.files-content {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    min-height: 200px;
+}
+
+.drop-zone-section {
+    flex: 1;
+}
+
+.files-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-start;
+    max-width: 300px;
+}
+
+.instructions {
+    margin-top: 16px;
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .files-content {
+        flex-direction: column;
+    }
+    
+    .files-display {
+        justify-content: center;
+        max-width: none;
+    }
+    
+    .file-drop-zone {
+        padding: 32px 16px;
+        min-height: 150px;
+    }
+    
+    .related-files-container {
+        padding: 16px;
+    }
+}
+
+/* Animation for file addition */
+@keyframes fileAdded {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.file-item-container {
+    animation: fileAdded 0.3s ease-out;
+}
+
+/* Loading state */
+.file-drop-zone.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.file-drop-zone.loading .drop-text::after {
+    content: " (Processing...)";
+    color: #3b82f6;
+}

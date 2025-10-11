@@ -1,57 +1,128 @@
-@page "/file-manager"
+@page "/filemanager"
+@using Financials.Data.Classes
 @rendermode InteractiveServer
-@using Financials.Components.Common
+
+<PageTitle>File Manager</PageTitle>
 
 <div class="file-manager-page">
-    <div class="container">
-        <div class="max-width-container">
-            <div class="demo-card">
-                <RelatedFiles />
-            </div>
-            
-            <!-- Instructions -->
-            <div class="instructions">
-                <p>This CRM file manager allows you to drag and drop files without downloading them.</p>
-                <p>Files are stored as references and can be opened by double-clicking their icons.</p>
-            </div>
+    <div class="page-header">
+        <h1>File Manager</h1>
+        <p class="page-description">
+            Drag and drop files to manage your documents. Files are stored locally and can be opened by double-clicking.
+        </p>
+    </div>
+
+    <div class="file-manager-content">
+        <RelatedFiles />
+    </div>
+
+    <div class="page-footer">
+        <div class="info-section">
+            <h3>Features</h3>
+            <ul>
+                <li>Drag and drop file upload</li>
+                <li>File type recognition with icons</li>
+                <li>Double-click to open files</li>
+                <li>Easy file removal</li>
+                <li>Responsive design</li>
+            </ul>
+        </div>
+        
+        <div class="info-section">
+            <h3>Supported File Types</h3>
+            <ul>
+                <li>PDF documents</li>
+                <li>Images (JPG, PNG, GIF, etc.)</li>
+                <li>Word documents (DOC, DOCX)</li>
+                <li>Excel spreadsheets (XLS, XLSX)</li>
+                <li>Other file types</li>
+            </ul>
         </div>
     </div>
 </div>
 
 <style>
-.file-manager-page {
-    min-height: 100vh;
-    background-color: #f9fafb;
-    padding: 2rem 0;
-}
+    .file-manager-page {
+        min-height: 100vh;
+        background-color: #f8fafc;
+        padding: 20px;
+    }
 
-.container {
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 0 1rem;
-}
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
 
-.max-width-container {
-    max-width: 64rem;
-    margin: 0 auto;
-}
+    .page-header h1 {
+        color: #1e293b;
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 16px;
+    }
 
-.demo-card {
-    background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    border: 1px solid #e5e7eb;
-    padding: 1.5rem;
-}
+    .page-description {
+        color: #64748b;
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 0;
+    }
 
-.instructions {
-    margin-top: 1.5rem;
-    text-align: center;
-    font-size: 0.875rem;
-    color: #6b7280;
-}
+    .file-manager-content {
+        margin-bottom: 40px;
+    }
 
-.instructions p {
-    margin: 0.25rem 0;
-}
+    .page-footer {
+        max-width: 800px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+    }
+
+    .info-section h3 {
+        color: #1e293b;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 16px;
+    }
+
+    .info-section ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .info-section li {
+        color: #64748b;
+        font-size: 14px;
+        padding: 4px 0;
+        position: relative;
+        padding-left: 20px;
+    }
+
+    .info-section li::before {
+        content: "✓";
+        color: #10b981;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+    }
+
+    @@media (max-width: 768px) {
+        .page-footer {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        
+        .page-header h1 {
+            font-size: 24px;
+        }
+        
+        .file-manager-page {
+            padding: 16px;
+        }
+    }
 </style>

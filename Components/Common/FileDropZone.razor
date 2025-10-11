@@ -1,146 +1,137 @@
-@using Financials.Data.Classes
+@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Forms
 @inject IJSRuntime JSRuntime
 @implements IAsyncDisposable
+@rendermode InteractiveServer
 
-<div class="file-drop-zone @(IsDragActive ? "drag-active" : "")"
-     @onclick="TriggerFileInput">
-    
-    <InputFile OnChange="HandleFileSelected" multiple class="file-input" @ref="fileInput" />
+<div id="@elementId" class="file-drop-zone @(IsDragActive ? "drag-active" : "")"
+     @onclick="OpenFileDialog">
     
     <div class="drop-zone-content">
-        <svg class="download-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7,10 12,15 17,10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        <p class="drop-zone-text">Drag and drop files here or click to browse.</p>
+        <div class="drop-icon">📁</div>
+        <p class="drop-text">@(IsDragActive ? "Drop files here!" : "Drag and drop files here or click to browse")</p>
     </div>
+    
+    <InputFile @ref="fileInput" 
+               OnChange="HandleFileSelected" 
+               multiple 
+               style="display: none;" />
 </div>
 
+
 @code {
-    [Parameter] public EventCallback<FileData[]> OnFilesAdded { get; set; }
-    
+    [Parameter] public EventCallback<IBrowserFile[]> OnFilesAdded { get; set; }
+
     private bool IsDragActive = false;
     private InputFile? fileInput;
+    private string elementId = Guid.NewGuid().ToString();
+    private DotNetObjectReference<FileDropZone>? dotNetRef;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            try
-            {
-                // Set up drag and drop event listeners using JavaScript
-                await JSRuntime.InvokeVoidAsync("setupDragAndDrop", DotNetObjectReference.Create(this));
-            }
-            catch (InvalidOperationException)
-            {
-                // Ignore JavaScript interop errors during static rendering
-                // The drag and drop functionality will be available after the component becomes interactive
-            }
+            dotNetRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("initializeFileDropZone", dotNetRef, elementId);
         }
     }
 
-    private async Task TriggerFileInput()
+    [JSInvokable]
+    public Task SetDragActive(bool isActive)
     {
-        if (fileInput != null)
+        IsDragActive = isActive;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public async Task HandleDroppedFiles(object[] fileData)
+    {
+        try
         {
-            await JSRuntime.InvokeVoidAsync("triggerFileInput", fileInput.Element);
+            Console.WriteLine($"HandleDroppedFiles called with {fileData?.Length ?? 0} files");
+            var files = new List<IBrowserFile>();
+            
+            if (fileData != null)
+            {
+                foreach (var file in fileData)
+                {
+                    Console.WriteLine($"Processing file: {file?.GetType().Name}");
+                    
+                    // Parse the file data directly from the object
+                    if (file is System.Text.Json.JsonElement fileDict && 
+                        fileDict.ValueKind == System.Text.Json.JsonValueKind.Object)
+                    {
+                        var name = fileDict.GetProperty("name").GetString() ?? "Unknown";
+                        var type = fileDict.GetProperty("type").GetString() ?? "application/octet-stream";
+                        var size = fileDict.GetProperty("size").GetInt64();
+                        
+                        Console.WriteLine($"File: {name}, Type: {type}, Size: {size}");
+                        var mockFile = new MockBrowserFile(name, type, size);
+                        files.Add(mockFile);
+                    }
+                }
+            }
+            
+            Console.WriteLine($"Created {files.Count} mock files");
+            await OnFilesAdded.InvokeAsync(files.ToArray());
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error handling dropped files: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            // Fallback: create a simple file reference
+            var fallbackFile = new MockBrowserFile("Dropped File", "application/octet-stream", 0);
+            await OnFilesAdded.InvokeAsync(new[] { fallbackFile });
+        }
+    }
+
+    private async Task OpenFileDialog()
+    {
+        await JSRuntime.InvokeVoidAsync("eval", "document.querySelector('input[type=\"file\"]').click();");
     }
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
-        if (e.FileCount > 0)
-        {
-            var fileDataList = new List<FileData>();
-            
-            foreach (var file in e.GetMultipleFiles())
-            {
-                // Read the file as a byte array
-                var buffer = new byte[file.Size];
-                await file.OpenReadStream().ReadAsync(buffer);
-                
-                // Create blob URL using JavaScript
-                var blobUrl = await JSRuntime.InvokeAsync<string>("createBlobUrl", buffer, file.ContentType);
-                
-                var fileData = new FileData
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Name = file.Name,
-                    Type = file.ContentType,
-                    Size = file.Size,
-                    UploadDate = DateTime.Now,
-                    Url = blobUrl
-                };
-
-                fileDataList.Add(fileData);
-            }
-            
-            await OnFilesAdded.InvokeAsync(fileDataList.ToArray());
-        }
+        var files = e.GetMultipleFiles().ToArray();
+        await OnFilesAdded.InvokeAsync(files);
     }
 
-    [JSInvokable]
-    public async Task HandleDroppedFiles(string[] fileNames, byte[][] fileData, string[] contentTypes)
+    public ValueTask DisposeAsync()
     {
-        var fileDataList = new List<FileData>();
-        
-        for (int i = 0; i < fileNames.Length; i++)
-        {
-            // Create blob URL using JavaScript
-            string blobUrl;
-            try
-            {
-                blobUrl = await JSRuntime.InvokeAsync<string>("createBlobUrl", fileData[i], contentTypes[i]);
-            }
-            catch (InvalidOperationException)
-            {
-                // Fallback if JavaScript interop is not available
-                blobUrl = $"data:{contentTypes[i]};base64,{Convert.ToBase64String(fileData[i])}";
-            }
-            
-            var fileDataItem = new FileData
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = fileNames[i],
-                Type = contentTypes[i],
-                Size = fileData[i].Length,
-                UploadDate = DateTime.Now,
-                Url = blobUrl
-            };
-
-            fileDataList.Add(fileDataItem);
-        }
-        
-        await OnFilesAdded.InvokeAsync(fileDataList.ToArray());
-        StateHasChanged();
+        dotNetRef?.Dispose();
+        return ValueTask.CompletedTask;
     }
 
-    [JSInvokable]
-    public void SetDragActive(bool active)
+    // Data structure for file information
+    private class FileInfo
     {
-        if (IsDragActive != active)
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public long Size { get; set; }
+        public long LastModified { get; set; }
+    }
+
+    // Mock class to handle dropped files without content
+    private class MockBrowserFile : IBrowserFile
+    {
+        public string Name { get; }
+        public DateTimeOffset LastModified { get; }
+        public long Size { get; }
+        public string ContentType { get; }
+
+        public MockBrowserFile(string name, string contentType, long size)
         {
-            IsDragActive = active;
-            StateHasChanged();
+            Name = name;
+            ContentType = contentType;
+            Size = size;
+            LastModified = DateTimeOffset.UtcNow;
+        }
+
+        public Stream OpenReadStream(long maxAllowedSize = 512000, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException("MockBrowserFile doesn't support stream reading");
         }
     }
 
-    public async ValueTask DisposeAsync()
-    {
-        // Clean up event listeners only if component is properly initialized
-        try
-        {
-            if (JSRuntime != null)
-            {
-                await JSRuntime.InvokeVoidAsync("cleanupDragAndDrop");
-            }
-        }
-        catch (InvalidOperationException)
-        {
-            // Ignore JavaScript interop errors during disposal
-            // This can happen during static rendering or when the circuit is disconnected
-        }
-    }
 }

@@ -21,6 +21,7 @@
     align-items: center;
     padding: 0;
     justify-content: space-between;
+    position: relative;
 }
 
 .debts-container > .header > .header-content {
@@ -50,6 +51,7 @@
     height: calc(1013px - 52px);
     width: 1520px;
     min-width: 1520px;
+    overflow: visible;
 }
 
 .debts-table {
@@ -59,6 +61,7 @@
     flex: 0 0 885px;
     display: flex;
     flex-direction: column;
+    overflow-x: visible;
 }
 
 /* Table Rows and Cells */
@@ -69,6 +72,7 @@
     border-bottom: 0.5px solid #8C959E;
     background: white;
     cursor: pointer;
+    overflow: visible;
 }
 
 .debt-row.selected, 
@@ -135,6 +139,8 @@
     width: 210px;
     padding: 0px 10px;
     justify-content: flex-start;
+    overflow: visible;
+    position: relative;
 }
 
 .header-item.as-of, .cell.as-of {
@@ -329,4 +335,268 @@
     margin-right: 0px;
     margin-bottom: 10px;
     box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+}
+
+/* Editable cell styles */
+.editable-cell {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    color: #000;
+    padding: 0;
+    border-radius: 4px;
+    font-family: Inter;
+    letter-spacing: 0.24px;
+}
+
+.editable-cell:focus {
+    outline: none;
+    background: transparent;
+    border: none;
+}
+
+.editable-cell:hover {
+    background: transparent;
+}
+
+.editable-cell:active {
+    outline: none;
+    background: transparent;
+    border: none;
+}
+
+/* Align cells with their headers */
+.cell.balance .editable-cell {
+    text-align: right;
+}
+
+.cell.pmt-made .editable-cell,
+.cell.rate .editable-cell,
+.cell.term .editable-cell {
+    text-align: center;
+}
+
+.cell.report-description .editable-cell {
+    text-align: left;
+}
+
+/* Ensure all cell text is black */
+.debts-container .debts-table .cell {
+    color: #000 !important;
+}
+
+/* Force black color for all text in cells, including inputs */
+.debts-container .debts-table .cell *,
+.debts-container .debts-table .cell input,
+.debts-container .debts-table .cell .editable-cell {
+    color: #000 !important;
+}
+
+/* Override any blue text styling */
+.debt-row .cell,
+.debt-row .cell input,
+.debt-row .cell .editable-cell {
+    color: #000 !important;
+}
+
+/* Date input specific styling */
+.date-input {
+    text-align: center;
+    font-size: 16px;
+    width: 100%;
+    max-width: 80px;
+}
+
+/* Ensure proper cursor behavior */
+.editable-cell {
+    cursor: text;
+}
+
+.editable-cell:focus {
+    cursor: text;
+}
+
+/* Hover Note Icon and Tooltip */
+.hover-note-wrapper {
+    position: relative;
+    display: inline-flex;
+    margin-left: 8px;
+}
+
+.hover-note-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.hover-note-tooltip {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #FFF;
+    border: 1px solid #4C4C4F;
+    border-radius: 4px;
+    padding: 8px 12px;
+    min-width: 200px;
+    max-width: 300px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s, visibility 0.15s;
+    color: #000;
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.21px;
+    white-space: normal;
+    word-wrap: break-word;
+    pointer-events: none;
+}
+
+.hover-note-wrapper:hover .hover-note-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Amortization Icon Styles */
+.amortization-icon {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    aspect-ratio: 1/1;
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: opacity 0.2s;
+}
+
+.amortization-icon:hover {
+    opacity: 0.8;
+}
+
+/* Amortization Modal Styles */
+.amortization-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.amortization-modal {
+    width: 622px;
+    max-height: 835px;
+    background-color: white;
+    border-radius: 8px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.amortization-modal-header {
+    padding: 20px 20px 0 20px;
+    background-color: white;
+}
+
+.amortization-modal-title {
+    color: #000;
+    font-family: Inter;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.27px;
+}
+
+.amortization-table-container {
+    padding: 0 20px 20px 20px;
+    flex: 1;
+    overflow: auto;
+    background-color: white;
+}
+
+.amortization-table-content {
+    padding: 0;
+    margin-top: 20px;
+}
+
+.amortization-table-row {
+    display: flex;
+    align-items: stretch;
+    height: 28px;
+}
+
+.amortization-table-row.header {
+    color: #FFF;
+    background-color: #093B5D;
+    padding: 4px 0;
+    font-family: Inter;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.amortization-table-cell {
+    padding: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-right: 0.25px solid rgba(25, 42, 61, 0.50);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-shrink: 0;
+}
+
+.amortization-table-cell:last-child {
+    border-right: none;
+}
+
+.amortization-table-cell.align-left {
+    justify-content: flex-start;
+}
+
+.amortization-table-cell.align-center {
+    justify-content: center;
+    text-align: center;
+}
+
+.amortization-table-cell.align-right {
+    justify-content: flex-end;
+}
+
+.amortization-table-row:not(.header) .amortization-table-cell {
+    color: #000;
+    font-family: Inter;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+}
+
+.amortization-table-row:not(.header) {
+    background-color: transparent;
+    border-top: 0.25px solid rgba(25, 42, 61, 0.50);
+    border-bottom: 0.25px solid rgba(25, 42, 61, 0.50);
+    border-left: 0.25px solid rgba(25, 42, 61, 0.50);
+    border-right: 0.25px solid rgba(25, 42, 61, 0.50);
 }

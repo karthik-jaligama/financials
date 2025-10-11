@@ -7,7 +7,7 @@
     border-radius: 10px;
     background: #FFF;
     box-shadow: 2px 40px 100px 30px rgba(0, 0, 0, 0.40);
-    overflow: hidden;
+    overflow: visible;
 }
 
 .assets-container > .header {
@@ -30,6 +30,7 @@
 .content-container {
     display: flex;
     height: calc(1013px - 52px); /* Total height minus header height */
+    overflow: visible;
 }
 
 .assets-table {
@@ -37,11 +38,13 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: visible;
 }
 
 .assets-rows {
     flex: 1;
     overflow-y: auto;
+    overflow-x: visible;
     -ms-overflow-style: none;  /* Internet Explorer and Edge */
     scrollbar-width: none;  /* Firefox */
 }
@@ -168,6 +171,7 @@
     border-top: 0.125px solid #E2E8F0;
     margin-top: -0.125px; /* Eliminate gap between rows */
     cursor: pointer;
+    overflow: visible;
 }
 
 .asset-row.selected, 
@@ -257,4 +261,133 @@
     font-weight: 400;
     line-height: 130%;
     letter-spacing: 0.24px;
+}
+
+/* Editable cell styles */
+.editable-cell {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    color: #000;
+    padding: 0;
+    border-radius: 4px;
+    font-family: Inter;
+    letter-spacing: 0.24px;
+}
+
+.editable-cell:focus {
+    outline: none;
+    background: transparent;
+    border: none;
+}
+
+.editable-cell:hover {
+    background: transparent;
+}
+
+.editable-cell:active {
+    outline: none;
+    background: transparent;
+    border: none;
+}
+
+/* Align cells with their headers */
+.cell.asset-value .editable-cell {
+    text-align: right;
+}
+
+.cell.report-description {
+    overflow: visible;
+    position: relative;
+    z-index: 1;
+}
+
+.asset-row {
+    position: relative;
+}
+
+.cell.report-description .editable-cell {
+    text-align: left;
+}
+
+/* Ensure all cell text is black */
+.assets-container .assets-table .cell {
+    color: #000 !important;
+}
+
+/* Force black color for all text in cells, including inputs */
+.assets-container .assets-table .cell *,
+.assets-container .assets-table .cell input,
+.assets-container .assets-table .cell .editable-cell {
+    color: #000 !important;
+}
+
+/* Override any blue text styling */
+.asset-row .cell,
+.asset-row .cell input,
+.asset-row .cell .editable-cell {
+    color: #000 !important;
+}
+
+/* Date input specific styling */
+.date-input {
+    text-align: center;
+    font-size: 16px;
+    width: 100%;
+    max-width: 80px;
+}
+
+/* Ensure proper cursor behavior */
+.editable-cell {
+    cursor: text;
+}
+
+.editable-cell:focus {
+    cursor: text;
+}
+
+/* Hover Note Icon and Tooltip */
+.hover-note-wrapper {
+    position: relative;
+    display: inline-flex;
+    margin-left: 8px;
+}
+
+.hover-note-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.hover-note-tooltip {
+    position: fixed;
+    background: #FFF;
+    border: 1px solid #4C4C4F;
+    border-radius: 4px;
+    padding: 8px 12px;
+    min-width: 200px;
+    max-width: 300px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s, visibility 0.15s;
+    color: #000;
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.21px;
+    white-space: normal;
+    word-wrap: break-word;
+    pointer-events: none;
+    margin-left: 30px;
+    margin-top: -10px;
+}
+
+.hover-note-wrapper:hover .hover-note-tooltip {
+    opacity: 1;
+    visibility: visible;
 }

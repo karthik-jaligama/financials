@@ -1,67 +1,163 @@
+@using Microsoft.AspNetCore.Components.Web
 @using Financials.Data.Classes
+@using Financials.Data.Services
 @inject IJSRuntime JSRuntime
+@inject IServiceProvider ServiceProvider
 
 <div class="file-item-container">
-    <button class="remove-button" @onclick="RemoveFile" title="Remove file">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
+    <button class="remove-button" @onclick="() => OnRemove.InvokeAsync(FileData.Id)" title="Remove file">
+        ✕
     </button>
     
-    <div class="file-item" @ondblclick="OpenFile" title="Double-click to open @File.Name">
-        @GetFileIcon()
-        <div class="file-name">@File.Name</div>
+    <div class="file-item" @ondblclick="OpenFile" title="Double-click to open @FileData.Name">
+        <div class="file-icon @GetFileIconClass()">
+            @GetFileIcon()
+        </div>
+        <div class="file-name">
+            @FileData.Name
+        </div>
+        <div class="file-status">
+            @if (FileData.IsLinkedToSharePoint)
+            {
+                <span class="sharepoint-linked" title="Linked to SharePoint">🔗</span>
+            }
+            else
+            {
+                <button class="link-sharepoint-btn" @onclick="LinkToSharePoint" title="Link to SharePoint">
+                    📎
+                </button>
+            }
+        </div>
     </div>
 </div>
 
+
 @code {
-    [Parameter] public FileData File { get; set; } = new();
+    [Parameter] public FileData FileData { get; set; } = new();
     [Parameter] public EventCallback<string> OnRemove { get; set; }
-
-    private RenderFragment GetFileIcon()
-    {
-        var extension = Path.GetExtension(File.Name)?.ToLower();
-        
-        return @<div class="file-icon @GetFileIconClass(extension)">
-            <div class="file-icon-text">@GetFileIconText(extension)</div>
-        </div>;
-    }
-
-    private string GetFileIconClass(string? extension)
-    {
-        return extension switch
-        {
-            ".pdf" => "pdf-icon",
-            ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".webp" => "image-icon",
-            ".doc" or ".docx" => "doc-icon",
-            ".xls" or ".xlsx" => "excel-icon",
-            _ => "default-icon"
-        };
-    }
-
-    private string GetFileIconText(string? extension)
-    {
-        return extension switch
-        {
-            ".pdf" => "PDF",
-            ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".webp" => "IMG",
-            ".doc" or ".docx" => "DOC",
-            ".xls" or ".xlsx" => "XLS",
-            _ => "FILE"
-        };
-    }
+    [Parameter] public EventCallback<FileData> OnFileUpdated { get; set; }
 
     private async Task OpenFile()
     {
-        // Open the file in a new tab using the blob URL
-        await JSRuntime.InvokeVoidAsync("openFileInNewTab", File.Url);
+        if (FileData.IsLinkedToSharePoint)
+        {
+            // Open SharePoint file
+            await JSRuntime.InvokeVoidAsync("open", FileData.SharePointShareUrl, "_blank");
+        }
+        else
+        {
+            // Show file information
+            var fileInfo = $"File Information:\n" +
+                          $"Name: {FileData.Name}\n" +
+                          $"Type: {FileData.ContentType}\n" +
+                          $"Size: {FileData.Size} bytes\n" +
+                          $"Uploaded: {FileData.UploadedAt:yyyy-MM-dd HH:mm:ss}\n" +
+                          $"ID: {FileData.Id}\n\n" +
+                          $"SharePoint Status: Not Linked\n" +
+                          $"Click the 📎 button to link to SharePoint";
+            
+            await JSRuntime.InvokeVoidAsync("alert", fileInfo);
+        }
     }
 
-    private async Task RemoveFile()
+    private async Task LinkToSharePoint()
     {
-        // Clean up the blob URL before removing
-        await JSRuntime.InvokeVoidAsync("revokeBlobUrl", File.Url);
-        await OnRemove.InvokeAsync(File.Id);
+        try
+        {
+            // Get SharePoint service from service provider
+            var sharePointService = ServiceProvider.GetService<ISharePointFileService>();
+            
+            if (sharePointService == null)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", 
+                    "SharePoint service is not available. Please ensure the service is properly configured.");
+                return;
+            }
+            
+            // Search for matching SharePoint file
+            var matchingFile = await sharePointService.FindMatchingFileAsync(FileData);
+            
+            if (matchingFile != null)
+            {
+                // Link the file to SharePoint
+                var updatedFile = await sharePointService.LinkToSharePointAsync(FileData, matchingFile);
+                await OnFileUpdated.InvokeAsync(updatedFile);
+                
+                await JSRuntime.InvokeVoidAsync("alert", 
+                    $"Successfully linked to SharePoint!\n\n" +
+                    $"File: {matchingFile.Name}\n" +
+                    $"SharePoint URL: {matchingFile.Url}\n" +
+                    $"Last Modified: {matchingFile.LastModified:yyyy-MM-dd HH:mm:ss}");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", 
+                    $"No matching SharePoint file found for:\n" +
+                    $"Name: {FileData.Name}\n" +
+                    $"Date: {FileData.UploadedAt:yyyy-MM-dd HH:mm:ss}\n\n" +
+                    "Make sure the file exists in SharePoint with the same name and similar date.");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error linking to SharePoint: {ex.Message}");
+        }
+    }
+
+    private string GetFileIcon()
+    {
+        var extension = Path.GetExtension(FileData.Name)?.ToLower();
+        var contentType = FileData.ContentType?.ToLower();
+
+        if (contentType?.Contains("pdf") == true || extension == ".pdf")
+        {
+            return "PDF";
+        }
+
+        if (contentType?.Contains("image") == true)
+        {
+            return "IMG";
+        }
+
+        if (contentType?.Contains("word") == true || extension == ".doc" || extension == ".docx")
+        {
+            return "DOC";
+        }
+
+        if (contentType?.Contains("excel") == true || extension == ".xls" || extension == ".xlsx")
+        {
+            return "XLS";
+        }
+
+        return "FILE";
+    }
+
+    private string GetFileIconClass()
+    {
+        var extension = Path.GetExtension(FileData.Name)?.ToLower();
+        var contentType = FileData.ContentType?.ToLower();
+
+        if (contentType?.Contains("pdf") == true || extension == ".pdf")
+        {
+            return "pdf";
+        }
+
+        if (contentType?.Contains("image") == true)
+        {
+            return "image";
+        }
+
+        if (contentType?.Contains("word") == true || extension == ".doc" || extension == ".docx")
+        {
+            return "word";
+        }
+
+        if (contentType?.Contains("excel") == true || extension == ".xls" || extension == ".xlsx")
+        {
+            return "excel";
+        }
+
+        return "default";
     }
 }
+

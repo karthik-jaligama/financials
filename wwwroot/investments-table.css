@@ -70,6 +70,7 @@
     height: calc(1013px - 52px);
     width: 1510px;
     min-width: 1510px;
+    overflow: visible;
 }
 
 .investments-table {
@@ -79,6 +80,7 @@
     flex: 0 0 722px;
     display: flex;
     flex-direction: column;
+    overflow-x: visible;
 }
 
 /* Table Rows and Cells */
@@ -89,6 +91,7 @@
     border-bottom: 0.5px solid #8C959E;
     background: white;
     cursor: pointer;
+    overflow: visible;
 }
 
 .investment-row.selected, 
@@ -137,6 +140,8 @@
     width: 250px;
     padding: 0px 10px;
     justify-content: flex-start;
+    overflow: visible;
+    position: relative;
 }
 
 .header-item.as-of, .cell.as-of {
@@ -405,6 +410,24 @@
     min-width: 0;
 }
 
+.simple-panel-container {
+    display: flex;
+    align-items: flex-end;
+}
+
+.simple-panel-container .helper-text {
+    margin-left: 12px;
+    margin-bottom: 8px;
+    color: #000;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.24px;
+    white-space: nowrap;
+}
+
 .sum-total-item {
     display: flex;
     flex-direction: column;
@@ -512,5 +535,125 @@
     letter-spacing: 0.24px;
     opacity: 0.5;
     margin-left: 20px;
+}
+
+/* Editable cell styles */
+.editable-cell {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    color: #000;
+    padding: 0;
+    border-radius: 4px;
+    font-family: Inter;
+    letter-spacing: 0.24px;
+}
+
+.editable-cell:focus {
+    outline: none;
+    background: transparent;
+    border: none;
+}
+
+.editable-cell:hover {
+    background: transparent;
+}
+
+.editable-cell:active {
+    outline: none;
+    background: transparent;
+    border: none;
+}
+
+/* Align cells with their headers */
+.cell.value .editable-cell {
+    text-align: right;
+}
+
+.cell.report-description .editable-cell {
+    text-align: left;
+}
+
+/* Ensure all cell text is black */
+.investments-container .investments-table .cell {
+    color: #000 !important;
+}
+
+/* Force black color for all text in cells, including inputs */
+.investments-container .investments-table .cell *,
+.investments-container .investments-table .cell input,
+.investments-container .investments-table .cell .editable-cell {
+    color: #000 !important;
+}
+
+/* Override any blue text styling */
+.investment-row .cell,
+.investment-row .cell input,
+.investment-row .cell .editable-cell {
+    color: #000 !important;
+}
+
+/* Date input specific styling */
+.date-input {
+    text-align: center;
+    font-size: 16px;
+    width: 100%;
+    max-width: 80px;
+}
+
+/* Ensure proper cursor behavior */
+.editable-cell {
+    cursor: text;
+}
+
+.editable-cell:focus {
+    cursor: text;
+}
+
+/* Hover Note Icon and Tooltip */
+.hover-note-wrapper {
+    position: relative;
+    display: inline-flex;
+    margin-left: 8px;
+}
+
+.hover-note-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.hover-note-tooltip {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #FFF;
+    border: 1px solid #4C4C4F;
+    border-radius: 4px;
+    padding: 8px 12px;
+    min-width: 200px;
+    max-width: 300px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s, visibility 0.15s;
+    color: #000;
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 130%;
+    letter-spacing: 0.21px;
+    white-space: normal;
+    word-wrap: break-word;
+    pointer-events: none;
+}
+
+.hover-note-wrapper:hover .hover-note-tooltip {
+    opacity: 1;
+    visibility: visible;
 }
 

@@ -13,6 +13,7 @@ namespace Financials.Data
         public string? InterestRate { get; set; }
         public int? Term { get; set; }
         public string? ReportDesc { get; set; }
+        public string? ReportHoverNote { get; set; }
         public DateTime? BalanceDate { get; set; }
         public string? Notes { get; set; }
         public DateTime? OriginalLoanDate { get; set; }
@@ -76,6 +77,7 @@ namespace Financials.Data
             InterestRate = source.InterestRate;
             Term = source.Term;
             ReportDesc = source.ReportDesc;
+            ReportHoverNote = source.ReportHoverNote;
             BalanceDate = source.BalanceDate;
             Notes = source.Notes;
             OriginalLoanDate = source.OriginalLoanDate;

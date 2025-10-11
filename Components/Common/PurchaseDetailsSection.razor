@@ -15,14 +15,14 @@
             <div class="information-grid-table">
                 <div class="information-left">
                     <div class="header information-header">Amount</div>
-                    <div class="purchase-price-value"><input type="text" value="@(Asset?.Value ?? 0)" @oninput="@(async (e) => await UpdateValue(e))" /></div>
-                    <div class="ownership-pct-value"><input type="text" value="@(Asset?.OwnershipPct ?? 0)" @oninput="@(async (e) => await UpdateOwnershipPct(e))" /></div>
+                    <div class="purchase-price-value"><input type="text" class="editable-cell" value="@(Asset?.Value.ToString("N0") ?? "0")" @onchange="@(async (e) => await UpdateValue(e))" /></div>
+                    <div class="ownership-pct-value"><input type="text" class="editable-cell" value="@(Asset?.OwnershipPct.ToString("N0") ?? "0")" @onchange="@(async (e) => await UpdateOwnershipPct(e))" /></div>
                 </div>
                 <div></div>
                 <div class="information-right">
                     <div class="header information-header">As of Date</div>
-                    <div class="date-field purchase-date-value"><input type="date" value="@(Asset?.PurchPriceDate?.ToString("yyyy-MM-dd") ?? "")" @onchange="@(async (e) => await UpdatePurchPriceDate(e))" /></div>
-                    <div class="date-field ownership-date-value"><input type="date" value="@(Asset?.OwnershipPctDate?.ToString("yyyy-MM-dd") ?? "")" @onchange="@(async (e) => await UpdateOwnershipPctDate(e))" /></div>
+                    <div class="date-field purchase-date-value"><input type="text" class="date-input" value="@(Asset?.PurchPriceDate?.ToString("MM/dd/yy") ?? "")" placeholder="mm/dd/yy" @onchange="@(async (e) => await UpdatePurchPriceDate(e))" /></div>
+                    <div class="date-field ownership-date-value"><input type="text" class="date-input" value="@(Asset?.OwnershipPctDate?.ToString("MM/dd/yy") ?? "")" placeholder="mm/dd/yy" @onchange="@(async (e) => await UpdateOwnershipPctDate(e))" /></div>
                 </div>
             </div>
             <div class="ownership-detail-value"><input type="text" value="@(Asset?.OwnershipDetail ?? "")" @oninput="@(async (e) => await UpdateOwnershipDetail(e))" /></div>
@@ -33,11 +33,16 @@
 @code {
     [Parameter]
     public Asset? Asset { get; set; }
+    
+    [Parameter]
+    public EventCallback OnAssetUpdated { get; set; }
 
     private async Task UpdateValue(ChangeEventArgs e)
     {
         Console.WriteLine($"[PurchaseDetailsSection] UpdateValue called - Raw Input: '{e.Value}'");
-        if (Asset != null && decimal.TryParse(e.Value?.ToString(), out decimal value))
+        string inputString = e.Value?.ToString() ?? "";
+        string cleanInput = inputString.Replace(",", "").Replace("$", "").Trim();
+        if (Asset != null && decimal.TryParse(cleanInput, out decimal value))
         {
             Console.WriteLine($"[PurchaseDetailsSection] UpdateValue - Asset ID: {Asset.AssetId}, Old Value: {Asset.Value}, New Value: {value}");
             Asset.Value = value;
@@ -45,6 +50,7 @@
             {
                 await AssetService.UpdateAssetAsync(Asset);
                 Console.WriteLine($"[PurchaseDetailsSection] UpdateValue SUCCESS - Asset ID: {Asset.AssetId} updated in database");
+                await OnAssetUpdated.InvokeAsync();
             }
             catch (Exception ex)
             {
@@ -61,7 +67,9 @@
     private async Task UpdateOwnershipPct(ChangeEventArgs e)
     {
         Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPct called - Raw Input: '{e.Value}'");
-        if (Asset != null && decimal.TryParse(e.Value?.ToString(), out decimal value))
+        string inputString = e.Value?.ToString() ?? "";
+        string cleanInput = inputString.Replace(",", "").Replace("$", "").Trim();
+        if (Asset != null && decimal.TryParse(cleanInput, out decimal value))
         {
             Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPct - Asset ID: {Asset.AssetId}, Old Value: {Asset.OwnershipPct}, New Value: {value}");
             Asset.OwnershipPct = value;
@@ -69,6 +77,7 @@
             {
                 await AssetService.UpdateAssetAsync(Asset);
                 Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPct SUCCESS - Asset ID: {Asset.AssetId} updated in database");
+                await OnAssetUpdated.InvokeAsync();
             }
             catch (Exception ex)
             {
@@ -85,14 +94,29 @@
     private async Task UpdatePurchPriceDate(ChangeEventArgs e)
     {
         Console.WriteLine($"[PurchaseDetailsSection] UpdatePurchPriceDate called - Raw Input: '{e.Value}'");
-        if (Asset != null && DateTime.TryParse(e.Value?.ToString(), out DateTime date))
+        string inputString = e.Value?.ToString() ?? "";
+        if (Asset != null)
         {
-            Console.WriteLine($"[PurchaseDetailsSection] UpdatePurchPriceDate - Asset ID: {Asset.AssetId}, Old Value: {Asset.PurchPriceDate}, New Value: {date}");
-            Asset.PurchPriceDate = date;
+            if (string.IsNullOrEmpty(inputString))
+            {
+                Asset.PurchPriceDate = null;
+            }
+            else if (DateTime.TryParseExact(inputString, "MM/dd/yy", null, System.Globalization.DateTimeStyles.None, out DateTime date))
+            {
+                Console.WriteLine($"[PurchaseDetailsSection] UpdatePurchPriceDate - Asset ID: {Asset.AssetId}, Old Value: {Asset.PurchPriceDate}, New Value: {date}");
+                Asset.PurchPriceDate = date;
+            }
+            else
+            {
+                Console.WriteLine($"[PurchaseDetailsSection] UpdatePurchPriceDate - Failed to parse date");
+                return;
+            }
+            
             try
             {
                 await AssetService.UpdateAssetAsync(Asset);
                 Console.WriteLine($"[PurchaseDetailsSection] UpdatePurchPriceDate SUCCESS - Asset ID: {Asset.AssetId} updated in database");
+                await OnAssetUpdated.InvokeAsync();
             }
             catch (Exception ex)
             {
@@ -102,21 +126,36 @@
         }
         else
         {
-            Console.WriteLine($"[PurchaseDetailsSection] UpdatePurchPriceDate - Failed to parse date or Asset is null");
+            Console.WriteLine($"[PurchaseDetailsSection] UpdatePurchPriceDate - Asset is null");
         }
     }
 
     private async Task UpdateOwnershipPctDate(ChangeEventArgs e)
     {
         Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPctDate called - Raw Input: '{e.Value}'");
-        if (Asset != null && DateTime.TryParse(e.Value?.ToString(), out DateTime date))
+        string inputString = e.Value?.ToString() ?? "";
+        if (Asset != null)
         {
-            Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPctDate - Asset ID: {Asset.AssetId}, Old Value: {Asset.OwnershipPctDate}, New Value: {date}");
-            Asset.OwnershipPctDate = date;
+            if (string.IsNullOrEmpty(inputString))
+            {
+                Asset.OwnershipPctDate = null;
+            }
+            else if (DateTime.TryParseExact(inputString, "MM/dd/yy", null, System.Globalization.DateTimeStyles.None, out DateTime date))
+            {
+                Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPctDate - Asset ID: {Asset.AssetId}, Old Value: {Asset.OwnershipPctDate}, New Value: {date}");
+                Asset.OwnershipPctDate = date;
+            }
+            else
+            {
+                Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPctDate - Failed to parse date");
+                return;
+            }
+            
             try
             {
                 await AssetService.UpdateAssetAsync(Asset);
                 Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPctDate SUCCESS - Asset ID: {Asset.AssetId} updated in database");
+                await OnAssetUpdated.InvokeAsync();
             }
             catch (Exception ex)
             {
@@ -126,7 +165,7 @@
         }
         else
         {
-            Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPctDate - Failed to parse date or Asset is null");
+            Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipPctDate - Asset is null");
         }
     }
 
@@ -142,6 +181,7 @@
             {
                 await AssetService.UpdateAssetAsync(Asset);
                 Console.WriteLine($"[PurchaseDetailsSection] UpdateOwnershipDetail SUCCESS - Asset ID: {Asset.AssetId} updated in database");
+                await OnAssetUpdated.InvokeAsync();
             }
             catch (Exception ex)
             {
@@ -250,16 +290,26 @@ input[type="date"] {
     margin: 0;
     box-shadow: none;
     width: 100%;
-    transition: background-color 0.2s ease;
     box-sizing: border-box;
 }
 
 input:focus {
-    color: #055a9e;
-    background-color: rgba(7, 117, 196, 0.05);
+    color: #0775C4;
+    background: none;
+    outline: none;
 }
 
-input[type="date"] {
+input:active {
+    color: #0775C4;
+    background: none;
+    outline: none;
+}
+
+input:hover {
+    background: none;
+}
+
+.date-input {
     color: #0775C4;
     font-family: Inter;
     font-size: 16px;
@@ -287,35 +337,6 @@ input[type="date"] {
     height: 20.8px;
 }
 
-/* Remove calendar icon in Chrome, Safari, Edge */
-input[type="date"]::-webkit-calendar-picker-indicator {
-    display: none;
-    -webkit-appearance: none;
-}
-
-/* Remove calendar icon in Firefox */
-input[type="date"]::-moz-calendar-picker-indicator {
-    display: none;
-}
-
-/* Remove calendar icon in old Edge/IE */
-input[type="date"]::-ms-clear,
-input[type="date"]::-ms-expand {
-    display: none;
-}
-
-/* Remove extra space in Firefox */
-input[type="date"]::-moz-focus-inner {
-    border: 0;
-    padding: 0;
-}
-
-/* Remove extra space in Chrome/Safari */
-input[type="date"]::-webkit-input-placeholder {
-    color: #0775C4;
-    opacity: 0.6;
-}
-
 /* Remove spinner buttons from number inputs */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
@@ -327,9 +348,9 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
-.date-field input[type="date"] {
-    width: 120px;
-    letter-spacing: 0;
-    font-variant-numeric: tabular-nums;
+.editable-cell {
+    cursor: text;
 }
 </style>
+
+<script src="/js/input-formatting.js"></script>

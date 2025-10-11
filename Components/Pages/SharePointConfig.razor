@@ -1,0 +1,288 @@
+@page "/sharepoint-config"
+@using Financials.Data.Classes
+@using Financials.Data.Services
+@inject IConfiguration Configuration
+@inject IServiceProvider ServiceProvider
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+
+<div class="sharepoint-config-container">
+    <h1>SharePoint Configuration</h1>
+    
+    <div class="config-section">
+        <h2>Current Configuration</h2>
+        <div class="config-display">
+            <div class="config-item">
+                <label>Base URL:</label>
+                <span>@GetConfigValue("SharePoint:BaseUrl")</span>
+            </div>
+            <div class="config-item">
+                <label>Site ID:</label>
+                <span>@GetConfigValue("SharePoint:SiteId")</span>
+            </div>
+            <div class="config-item">
+                <label>Document Library:</label>
+                <span>@GetConfigValue("SharePoint:DocumentLibrary")</span>
+            </div>
+            <div class="config-item">
+                <label>Client ID:</label>
+                <span>@(string.IsNullOrEmpty(GetConfigValue("SharePoint:ClientId")) ? "Not configured" : "***configured***")</span>
+            </div>
+            <div class="config-item">
+                <label>Tenant ID:</label>
+                <span>@(string.IsNullOrEmpty(GetConfigValue("SharePoint:TenantId")) ? "Not configured" : "***configured***")</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-section">
+        <h2>Test Connection</h2>
+        <button class="test-button" @onclick="TestSharePointConnection" disabled="@isTesting">
+            @if (isTesting)
+            {
+                <span>Testing...</span>
+            }
+            else
+            {
+                <span>Test SharePoint Connection</span>
+            }
+        </button>
+        
+        @if (!string.IsNullOrEmpty(testResult))
+        {
+            <div class="test-result @(testSuccess ? "success" : "error")">
+                @testResult
+            </div>
+        }
+    </div>
+
+    <div class="config-section">
+        <h2>Setup Instructions</h2>
+        <div class="instructions">
+            <h3>1. Create Azure App Registration</h3>
+            <ol>
+                <li>Go to <a href="https://portal.azure.com" target="_blank">Azure Portal</a></li>
+                <li>Navigate to "Azure Active Directory" → "App registrations"</li>
+                <li>Click "New registration"</li>
+                <li>Name: "Financials SharePoint Integration"</li>
+                <li>Supported account types: "Accounts in this organizational directory only"</li>
+                <li>Click "Register"</li>
+            </ol>
+
+            <h3>2. Configure API Permissions</h3>
+            <ol>
+                <li>In your app registration, go to "API permissions"</li>
+                <li>Click "Add a permission"</li>
+                <li>Select "Microsoft Graph"</li>
+                <li>Choose "Application permissions"</li>
+                <li>Add these permissions:
+                    <ul>
+                        <li>Sites.Read.All</li>
+                        <li>Files.Read.All</li>
+                        <li>Sites.FullControl.All</li>
+                    </ul>
+                </li>
+                <li>Click "Grant admin consent"</li>
+            </ol>
+
+            <h3>3. Create Client Secret</h3>
+            <ol>
+                <li>Go to "Certificates & secrets"</li>
+                <li>Click "New client secret"</li>
+                <li>Description: "Financials SharePoint Integration"</li>
+                <li>Expires: "24 months"</li>
+                <li>Click "Add"</li>
+                <li><strong>Copy the secret value immediately!</strong></li>
+            </ol>
+
+            <h3>4. Get SharePoint Site ID</h3>
+            <ol>
+                <li>Go to your SharePoint site</li>
+                <li>Click the gear icon → "Site information"</li>
+                <li>Copy the "Site ID" (GUID format)</li>
+            </ol>
+
+            <h3>5. Update Configuration</h3>
+            <p>Update the <code>appsettings.json</code> file with your values:</p>
+            <pre><code>{
+  "SharePoint": {
+    "BaseUrl": "https://yourcompany.sharepoint.com",
+    "SiteId": "your-site-id-here",
+    "DocumentLibrary": "Shared Documents",
+    "ClientId": "your-client-id-here",
+    "ClientSecret": "your-client-secret-here",
+    "TenantId": "your-tenant-id-here"
+  }
+}</code></pre>
+        </div>
+    </div>
+</div>
+
+<style>
+.sharepoint-config-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.config-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.config-display {
+    display: grid;
+    gap: 10px;
+}
+
+.config-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.config-item label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.test-button {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.test-button:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.test-button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.test-result {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.test-result.success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.test-result.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.instructions {
+    line-height: 1.6;
+}
+
+.instructions h3 {
+    color: #1f2937;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.instructions ol, .instructions ul {
+    margin-left: 20px;
+}
+
+.instructions li {
+    margin-bottom: 5px;
+}
+
+.instructions code {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.instructions pre {
+    background: #1f2937;
+    color: #f9fafb;
+    padding: 15px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 10px 0;
+}
+
+.instructions a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.instructions a:hover {
+    text-decoration: underline;
+}
+</style>
+
+@code {
+    private bool isTesting = false;
+    private string testResult = string.Empty;
+    private bool testSuccess = false;
+
+    private string GetConfigValue(string key)
+    {
+        return Configuration[key] ?? "Not configured";
+    }
+
+    private async Task TestSharePointConnection()
+    {
+        isTesting = true;
+        testResult = string.Empty;
+        StateHasChanged();
+
+        try
+        {
+            var sharePointService = ServiceProvider.GetService<RealSharePointFileService>();
+            
+            if (sharePointService == null)
+            {
+                testResult = "SharePoint service is not available. Please check your configuration.";
+                testSuccess = false;
+                return;
+            }
+
+            // Test by searching for a common file
+            var testResults = await sharePointService.SearchFilesAsync("test");
+            
+            if (testResults.Any())
+            {
+                testResult = $"✅ Connection successful! Found {testResults.Count} files in SharePoint.";
+                testSuccess = true;
+            }
+            else
+            {
+                testResult = "⚠️ Connection successful but no files found. This might be normal if your SharePoint is empty.";
+                testSuccess = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            testResult = $"❌ Connection failed: {ex.Message}";
+            testSuccess = false;
+        }
+        finally
+        {
+            isTesting = false;
+            StateHasChanged();
+        }
+    }
+}

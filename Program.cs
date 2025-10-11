@@ -1,5 +1,6 @@
 using Financials.Components;
 using Financials.Data;
+using Financials.Data.Classes;
 using Financials.Data.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,13 @@ namespace Financials
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
             
+            // Enable detailed errors for debugging
+            builder.Services.AddServerSideBlazor(options =>
+            {
+                options.DetailedErrors = true;
+            });
+            
+            
             // Add controllers for API endpoints
             builder.Services.AddControllers();
             
@@ -24,6 +32,14 @@ namespace Financials
             builder.Services.AddScoped<InvestmentService>();
             builder.Services.AddScoped<SavingsService>();
             builder.Services.AddScoped<DatabaseInitializationService>();
+            
+            // Add SharePoint configuration
+            builder.Services.Configure<SharePointConfiguration>(
+                builder.Configuration.GetSection("SharePoint"));
+            
+            // Add SharePoint service (real implementation)
+            builder.Services.AddScoped<ISharePointFileService, RealSharePointFileService>();
+            builder.Services.AddHttpClient<RealSharePointFileService>();
             
             // Add database context
             builder.Services.AddDbContext<FinancialsContext>(options =>

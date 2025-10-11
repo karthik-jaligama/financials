@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Input Test</title>
+    <style>
+        body {
+            font-family: Inter, sans-serif;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .date-input {
+            font-size: 16px;
+            padding: 8px;
+            border: 1px solid #4C4C4F;
+            border-radius: 4px;
+            font-family: Inter, monospace;
+            letter-spacing: 2px;
+        }
+        .instructions {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .debug {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Date Input Masking Test</h1>
+    
+    <div class="instructions">
+        <h3>Expected Behavior:</h3>
+        <ol>
+            <li>Start with: <code>MM/DD/YY</code></li>
+            <li>Type digits to replace placeholders</li>
+            <li>Delete a digit → it becomes a placeholder (M, D, or Y)</li>
+            <li>Type on a placeholder → it replaces just that letter</li>
+            <li>Slashes cannot be deleted</li>
+        </ol>
+    </div>
+
+    <div class="test-container">
+        <h3>Test Input:</h3>
+        <input type="text" class="date-input" value="MM/DD/YY" maxlength="8">
+        <div class="debug" id="debug"></div>
+    </div>
+
+    <script src="/js/input-formatting.js"></script>
+    
+    <script>
+        const input = document.querySelector('.date-input');
+        const debug = document.getElementById('debug');
+        
+        function updateDebug(event) {
+            const value = input.value;
+            const cursorPos = input.selectionStart;
+            debug.innerHTML = `
+                <strong>Event:</strong> ${event.type}<br>
+                <strong>Value:</strong> "${value}"<br>
+                <strong>Cursor:</strong> ${cursorPos}<br>
+                <strong>Key:</strong> ${event.key || 'N/A'}<br>
+                <strong>Input Data:</strong> ${event.data || 'N/A'}
+            `;
+        }
+        
+        input.addEventListener('keydown', (e) => updateDebug(e));
+        input.addEventListener('input', (e) => updateDebug(e));
+        input.addEventListener('click', (e) => updateDebug(e));
+        
+        // Initialize
+        updateDebug({ type: 'load', key: 'N/A' });
+    </script>
+</body>
+</html>
+

@@ -48,7 +48,13 @@
             <div class="header-item as-of">As Of</div>
         </div>
         <div class="select-asset">Select Liability</div>
-        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34" fill="none">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             width="34" 
+             height="34" 
+             viewBox="0 0 34 34" 
+             fill="none" 
+             class="amortization-icon"
+             @onclick="ToggleAmortizationSchedule">
             <path d="M13.26 10.88H20.74V13.6H13.26V10.88ZM22.1 13.6H29.58V10.88H22.1V13.6ZM4.41998 13.6H11.9V10.88H4.41998V13.6ZM13.26 17.68H20.74V14.96H13.26V17.68ZM22.1 17.68H29.58V14.96H22.1V17.68ZM4.41998 17.68H11.9V14.96H4.41998V17.68ZM22.1 21.76H29.58V19.04H22.1V21.76ZM13.26 21.76H20.74V19.04H13.26V21.76ZM4.41998 21.76H11.9V19.04H4.41998V21.76ZM22.1 25.84H29.58V23.12H22.1V25.84ZM13.26 25.84H20.74V23.12H13.26V25.84ZM4.41998 25.84H11.9V23.12H4.41998V25.84ZM22.1 29.92H29.58V27.2H22.1V29.92ZM13.26 29.92H20.74V27.2H13.26V29.92ZM4.41998 29.92H11.9V27.2H4.41998V29.92ZM4.41998 4.07996V9.51996H29.58V4.07996H4.41998Z" fill="white"/>
         </svg>
     </div>
@@ -60,6 +66,7 @@
                 @foreach (var debt in debts)
                 {
                 <div class="debt-row @(selectedDebt == debt ? "selected" : "")" 
+                     @key="debt.DebtId"
                      @onclick="() => SelectDebt(debt)">
                     <div class="cell time">
                         <CustomDropdown 
@@ -73,18 +80,58 @@
                             Options="@ownerOptions" 
                             ValueChanged="@(v => UpdateOwner(debt, v))" />
                     </div>
-                    <div class="cell balance">@(debt.Balance?.ToString("N0") ?? "n/a")</div>
-                    <div class="cell pmt-made">@(debt.PaymentMade?.ToString("N0") ?? "n/a")</div>
-                    <div class="cell rate">@(debt.InterestRate ?? "n/a")</div>
-                    <div class="cell term">@(debt.Term?.ToString() ?? "n/a")</div>
+                    <div class="cell balance">
+                        <input type="text" 
+                               class="editable-cell" 
+                               value="@(debt.Balance?.ToString("N0") ?? "")" 
+                               @onchange="@(async (e) => await UpdateBalance(debt, e))" />
+                    </div>
+                    <div class="cell pmt-made">
+                        <input type="text" 
+                               class="editable-cell" 
+                               value="@(debt.PaymentMade?.ToString("N0") ?? "")" 
+                               @onchange="@(async (e) => await UpdatePaymentMade(debt, e))" />
+                    </div>
+                    <div class="cell rate">
+                        <input type="text" 
+                               class="editable-cell" 
+                               value="@(debt.InterestRate ?? "")" 
+                               @onchange="@(async (e) => await UpdateInterestRate(debt, e))" />
+                    </div>
+                    <div class="cell term">
+                        <input type="number" 
+                               class="editable-cell" 
+                               value="@(debt.Term?.ToString() ?? "")" 
+                               @onchange="@(async (e) => await UpdateTerm(debt, e))" />
+                    </div>
                     <div class="cell cat">
                         <CustomDropdown 
                             Value="@debt.Category" 
                             Options="@categoryOptions" 
                             ValueChanged="@(v => UpdateCategory(debt, v))" />
                     </div>
-                    <div class="cell report-description">@(debt.ReportDesc ?? "n/a")</div>
-                    <div class="cell as-of">@(debt.BalanceDate?.ToString("MM/dd/yy") ?? "n/a")</div>
+                    <div class="cell report-description">
+                        <input type="text" 
+                               class="editable-cell" 
+                               value="@(debt.ReportDesc ?? "")" 
+                               @onchange="@(async (e) => await UpdateReportDesc(debt, e))" />
+                        @if (!string.IsNullOrEmpty(debt.ReportHoverNote))
+                        {
+                            <span class="hover-note-wrapper">
+                                <svg class="hover-note-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2.19996 4.84001C2.19996 3.38165 3.3816 2.20001 4.83996 2.20001H17.16C18.6183 2.20001 19.8 3.38165 19.8 4.84001V14.96C19.8 15.0769 19.7536 15.1886 19.6711 15.2711L15.2711 19.6711C15.1886 19.7536 15.0768 19.8 14.96 19.8H4.83995C3.38159 19.8 2.19995 18.6184 2.19995 17.16L2.19996 4.84001ZM4.83996 3.08001C3.868 3.08001 3.07996 3.86805 3.07996 4.84001V17.16C3.07996 18.132 3.868 18.92 4.83996 18.92H14.52V17.16C14.52 15.7017 15.7016 14.52 17.16 14.52H18.92V4.84001C18.92 3.86805 18.1319 3.08001 17.16 3.08001H4.83996ZM18.2978 15.4H17.16C16.188 15.4 15.4 16.1881 15.4 17.16V18.2978L18.2978 15.4Z" fill="black"/>
+                                </svg>
+                                <span class="hover-note-tooltip">@debt.ReportHoverNote</span>
+                            </span>
+                        }
+                    </div>
+                    <div class="cell as-of">
+                        <input type="text" 
+                               class="editable-cell date-input" 
+                               value="@(debt.BalanceDate?.ToString("MM/dd/yy") ?? "")" 
+                               placeholder="mm/dd/yy"
+                               @onchange="@(async (e) => await UpdateBalanceDate(debt, e))" />
+                    </div>
                 </div>
                 }
                 <div class="totals-row">
@@ -106,13 +153,59 @@
         <div class="scrollable-section">
             @if (selectedDebt != null)
             {
+                @if (selectedDebt.Category == "RE")
+            {
                 <Notes Note="@selectedDebt.Notes" Width="575px" />
                 
-                <LoanDataSection Debt="@selectedDebt" />
+                    <LoanDataSection Debt="@selectedDebt" OnDebtUpdated="@HandleDebtUpdated" />
 
                 <div style="margin: 30px;"><AddressSection/></div>
 
-                <AdjustableLoanSection Debt="@selectedDebt" />
+                    <AdjustableLoanSection Debt="@selectedDebt" OnDebtUpdated="@HandleDebtUpdated" />
+
+                    <div style="margin-top: 30px; margin-left: 30px;">
+                        <LinkTable 
+                            Title="Associated Assets"
+                            DataType="assets"
+                            Headers='new List<string> { "Own", "Value", "Category", "Report Description", "As Of" }'
+                            ColumnWidths='new List<int> { 60, 100, 120, 200, 94 }'
+                            ColumnAlignments='new List<string> { "center", "right", "left", "left", "center" }'
+                            Data='allAssociatedAssets'
+                            AllData='allAvailableAssets'
+                            CurrentlySelected='GetCurrentlySelectedAssetIndices()'
+                            OnSelectionChanged='OnAssetsSelectionChanged'
+                        />
+                    </div>
+                    <div style="margin-left: 30px;">
+                        <LinkTable 
+                            Title="Associated Income"
+                            DataType="incomes"
+                            Headers='new List<string> { "Annual", "Monthly", "Category", "Report Description", "As Of" }'
+                            ColumnWidths='new List<int> { 90, 100, 120, 170, 94 }'
+                            ColumnAlignments='new List<string> { "right", "right", "left", "left", "center" }'
+                            Data='allAssociatedIncomes'
+                            AllData='allAvailableIncomes'
+                            CurrentlySelected='GetCurrentlySelectedIncomeIndices()'
+                            OnSelectionChanged='OnIncomesSelectionChanged'
+                        />
+                    </div>
+                    <div style="margin-left: 30px;">
+                        <LinkTable 
+                            Title="Associated Insurance"
+                            DataType="insurances"
+                            Headers='new List<string> { "Own", "Value", "Category", "Report Description", "As Of" }'
+                            ColumnWidths='new List<int> { 60, 100, 120, 200, 94 }'
+                            ColumnAlignments='new List<string> { "center", "right", "left", "left", "right" }'
+                            Data='allAssociatedInsurances'
+                            AllData='allAvailableInsurances'
+                            CurrentlySelected='GetCurrentlySelectedInsuranceIndices()'
+                            OnSelectionChanged='OnInsurancesSelectionChanged'
+                        />
+                    </div>
+                }
+                else
+                {
+                    <LoanDataSection Debt="@selectedDebt" OnDebtUpdated="@HandleDebtUpdated" />
 
                 <div style="margin-top: 30px; margin-left: 30px;">
                     <LinkTable 
@@ -153,10 +246,58 @@
                         OnSelectionChanged='OnInsurancesSelectionChanged'
                     />
                 </div>
+                }
             }
         </div>
     </div>
 </div>
+
+@if (showAmortizationSchedule)
+{
+    <div class="amortization-modal-overlay" @onclick="ToggleAmortizationSchedule">
+        <div class="amortization-modal" @onclick:stopPropagation="true">
+            <div class="amortization-modal-header">
+                <span class="amortization-modal-title">Loan Payoff Schedule</span>
+            </div>
+            <div class="amortization-table-container">
+                <div class="amortization-table-content">
+                    <div class="amortization-table-row header">
+                        <div class="amortization-table-cell align-center" style="width: 39px;">Mo</div>
+                        <div class="amortization-table-cell align-right" style="width: 59px;">Int</div>
+                        <div class="amortization-table-cell align-right" style="width: 59px;">Prin</div>
+                        <div class="amortization-table-cell align-right" style="width: 59px;">Pmt</div>
+                        <div class="amortization-table-cell align-right" style="width: 84px;">Loan Bal</div>
+                        <div class="amortization-table-cell align-right" style="width: 69px;">Cum Int</div>
+                        <div class="amortization-table-cell align-center" style="width: 64px;">Date</div>
+                    </div>
+                    @if (amortizationSchedule != null && amortizationSchedule.Any())
+                    {
+                        @foreach (var payment in amortizationSchedule)
+                        {
+                            <div class="amortization-table-row">
+                                <div class="amortization-table-cell align-center" style="width: 39px;">@payment.Month</div>
+                                <div class="amortization-table-cell align-right" style="width: 59px;">@payment.Interest.ToString("N0")</div>
+                                <div class="amortization-table-cell align-right" style="width: 59px;">@payment.Principal.ToString("N0")</div>
+                                <div class="amortization-table-cell align-right" style="width: 59px;">@payment.Payment.ToString("N0")</div>
+                                <div class="amortization-table-cell align-right" style="width: 84px;">@payment.LoanBalance.ToString("N0")</div>
+                                <div class="amortization-table-cell align-right" style="width: 69px;">@payment.CumulativeInterest.ToString("N0")</div>
+                                <div class="amortization-table-cell align-center" style="width: 64px;">@payment.Date.ToString("MMM-yy")</div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="amortization-table-row">
+                            <div class="amortization-table-cell" style="width: 100%; text-align: center; padding: 20px; justify-content: center;">
+                                Select a debt with balance, rate, and term to view amortization schedule.
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     private List<Debt> debts = new();
@@ -166,12 +307,19 @@
     private List<string> categoryOptions = new() 
     { 
         "RE", 
+        "AU",
+        "RV",
+        "BZ",
+        "ED",
         "CC",
         "PL",
-        "AL",
-        "OL"
+        "AB"
     };
     private string componentKey = Guid.NewGuid().ToString();
+    
+    // Amortization schedule
+    private bool showAmortizationSchedule = false;
+    private List<AmortizationPayment> amortizationSchedule = new();
 
     // Data sources for LinkTable components
     private List<List<string>> allAssociatedAssets = new();
@@ -267,6 +415,18 @@
         }
     }
 
+    private async Task HandleDebtUpdated()
+    {
+        // Reload debts from database to ensure all changes (including hover notes) are reflected
+        if (selectedDebt != null)
+        {
+            var selectedDebtId = selectedDebt.DebtId;
+            debts = await DebtService.GetDebtsAsync();
+            selectedDebt = debts.FirstOrDefault(d => d.DebtId == selectedDebtId);
+        }
+        StateHasChanged();
+    }
+
     private async Task UpdateTimeframe(Debt debt, string value)
     {
         Console.WriteLine($"[DebtsTable] UpdateTimeframe called - Debt ID: {debt.DebtId}, Old Value: '{debt.Timeframe}', New Value: '{value}'");
@@ -311,6 +471,195 @@
         catch (Exception ex)
         {
             Console.WriteLine($"[DebtsTable] UpdateCategory ERROR - Debt ID: {debt.DebtId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateBalance(Debt debt, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[DebtsTable] UpdateBalance called - Debt ID: {debt.DebtId}, Raw Input: '{e.Value}'");
+        
+        string inputString = e.Value?.ToString() ?? "";
+        if (string.IsNullOrEmpty(inputString))
+        {
+            debt.Balance = null;
+        }
+        else
+        {
+            // Try parsing with different methods
+            bool parseSuccess = decimal.TryParse(inputString, out decimal value);
+            if (!parseSuccess)
+            {
+                // Try removing commas and parsing again
+                string cleanInput = inputString.Replace(",", "").Replace("$", "").Trim();
+                parseSuccess = decimal.TryParse(cleanInput, out value);
+            }
+            
+            if (parseSuccess)
+            {
+                Console.WriteLine($"[DebtsTable] UpdateBalance - Debt ID: {debt.DebtId}, Old Value: {debt.Balance}, New Value: {value}");
+                debt.Balance = value;
+            }
+            else
+            {
+                Console.WriteLine($"[DebtsTable] UpdateBalance - Failed to parse decimal value");
+                return;
+            }
+        }
+        
+        try
+        {
+            await DebtService.UpdateDebtAsync(debt);
+            Console.WriteLine($"[DebtsTable] UpdateBalance SUCCESS - Debt ID: {debt.DebtId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DebtsTable] UpdateBalance ERROR - Debt ID: {debt.DebtId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdatePaymentMade(Debt debt, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[DebtsTable] UpdatePaymentMade called - Debt ID: {debt.DebtId}, Raw Input: '{e.Value}'");
+        
+        string inputString = e.Value?.ToString() ?? "";
+        if (string.IsNullOrEmpty(inputString))
+        {
+            debt.PaymentMade = null;
+        }
+        else
+        {
+            // Try parsing with different methods
+            bool parseSuccess = decimal.TryParse(inputString, out decimal value);
+            if (!parseSuccess)
+            {
+                // Try removing commas and parsing again
+                string cleanInput = inputString.Replace(",", "").Replace("$", "").Trim();
+                parseSuccess = decimal.TryParse(cleanInput, out value);
+            }
+            
+            if (parseSuccess)
+            {
+                Console.WriteLine($"[DebtsTable] UpdatePaymentMade - Debt ID: {debt.DebtId}, Old Value: {debt.PaymentMade}, New Value: {value}");
+                debt.PaymentMade = value;
+            }
+            else
+            {
+                Console.WriteLine($"[DebtsTable] UpdatePaymentMade - Failed to parse decimal value");
+                return;
+            }
+        }
+        
+        try
+        {
+            await DebtService.UpdateDebtAsync(debt);
+            Console.WriteLine($"[DebtsTable] UpdatePaymentMade SUCCESS - Debt ID: {debt.DebtId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DebtsTable] UpdatePaymentMade ERROR - Debt ID: {debt.DebtId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateInterestRate(Debt debt, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[DebtsTable] UpdateInterestRate called - Debt ID: {debt.DebtId}, Old Value: '{debt.InterestRate}', New Value: '{e.Value}'");
+        debt.InterestRate = e.Value?.ToString() ?? "";
+        try
+        {
+            await DebtService.UpdateDebtAsync(debt);
+            Console.WriteLine($"[DebtsTable] UpdateInterestRate SUCCESS - Debt ID: {debt.DebtId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DebtsTable] UpdateInterestRate ERROR - Debt ID: {debt.DebtId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateTerm(Debt debt, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[DebtsTable] UpdateTerm called - Debt ID: {debt.DebtId}, Raw Input: '{e.Value}'");
+        
+        string inputString = e.Value?.ToString() ?? "";
+        if (string.IsNullOrEmpty(inputString))
+        {
+            debt.Term = null;
+        }
+        else if (int.TryParse(inputString, out int value))
+        {
+            Console.WriteLine($"[DebtsTable] UpdateTerm - Debt ID: {debt.DebtId}, Old Value: {debt.Term}, New Value: {value}");
+            debt.Term = value;
+        }
+        else
+        {
+            Console.WriteLine($"[DebtsTable] UpdateTerm - Failed to parse integer value");
+            return;
+        }
+        
+        try
+        {
+            await DebtService.UpdateDebtAsync(debt);
+            Console.WriteLine($"[DebtsTable] UpdateTerm SUCCESS - Debt ID: {debt.DebtId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DebtsTable] UpdateTerm ERROR - Debt ID: {debt.DebtId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateReportDesc(Debt debt, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[DebtsTable] UpdateReportDesc called - Debt ID: {debt.DebtId}, Old Value: '{debt.ReportDesc}', New Value: '{e.Value}'");
+        debt.ReportDesc = e.Value?.ToString() ?? "";
+        try
+        {
+            await DebtService.UpdateDebtAsync(debt);
+            Console.WriteLine($"[DebtsTable] UpdateReportDesc SUCCESS - Debt ID: {debt.DebtId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DebtsTable] UpdateReportDesc ERROR - Debt ID: {debt.DebtId}, Error: {ex.Message}");
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateBalanceDate(Debt debt, ChangeEventArgs e)
+    {
+        Console.WriteLine($"[DebtsTable] UpdateBalanceDate called - Debt ID: {debt.DebtId}, Raw Input: '{e.Value}'");
+        
+        string inputString = e.Value?.ToString() ?? "";
+        if (string.IsNullOrEmpty(inputString))
+        {
+            debt.BalanceDate = null;
+        }
+        else if (DateTime.TryParseExact(inputString, "MM/dd/yy", null, System.Globalization.DateTimeStyles.None, out DateTime valueDate))
+        {
+            Console.WriteLine($"[DebtsTable] UpdateBalanceDate - Debt ID: {debt.DebtId}, Old Value: {debt.BalanceDate}, New Value: {valueDate}");
+            debt.BalanceDate = valueDate;
+        }
+        else if (DateTime.TryParse(inputString, out valueDate))
+        {
+            Console.WriteLine($"[DebtsTable] UpdateBalanceDate - Debt ID: {debt.DebtId}, Old Value: {debt.BalanceDate}, New Value: {valueDate} (fallback parse)");
+            debt.BalanceDate = valueDate;
+        }
+        else
+        {
+            Console.WriteLine($"[DebtsTable] UpdateBalanceDate - Failed to parse date value");
+            return;
+        }
+        
+        try
+        {
+            await DebtService.UpdateDebtAsync(debt);
+            Console.WriteLine($"[DebtsTable] UpdateBalanceDate SUCCESS - Debt ID: {debt.DebtId} updated in database");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DebtsTable] UpdateBalanceDate ERROR - Debt ID: {debt.DebtId}, Error: {ex.Message}");
         }
         StateHasChanged();
     }
@@ -499,8 +848,103 @@
         return indices;
     }
 
+    private void ToggleAmortizationSchedule()
+    {
+        showAmortizationSchedule = !showAmortizationSchedule;
+        if (showAmortizationSchedule && selectedDebt != null)
+        {
+            CalculateAmortizationSchedule();
+        }
+    }
+
+    private void CalculateAmortizationSchedule()
+    {
+        amortizationSchedule.Clear();
+        
+        if (selectedDebt == null || 
+            selectedDebt.Balance == null || selectedDebt.Balance <= 0 ||
+            selectedDebt.Term == null || selectedDebt.Term <= 0 ||
+            string.IsNullOrEmpty(selectedDebt.InterestRate))
+        {
+            return;
+        }
+
+        // Parse interest rate (handle both percentage and decimal formats)
+        if (!decimal.TryParse(selectedDebt.InterestRate.Replace("%", ""), out decimal annualRate))
+        {
+            return;
+        }
+
+        // Convert to decimal if it's in percentage format
+        if (annualRate > 1)
+        {
+            annualRate = annualRate / 100;
+        }
+
+        decimal loanAmount = selectedDebt.Balance.Value;
+        int termMonths = selectedDebt.Term.Value;
+        decimal monthlyRate = annualRate / 12;
+        
+        // Calculate monthly payment using amortization formula
+        decimal monthlyPayment;
+        if (monthlyRate == 0)
+        {
+            monthlyPayment = loanAmount / termMonths;
+        }
+        else
+        {
+            monthlyPayment = loanAmount * (monthlyRate * (decimal)Math.Pow((double)(1 + monthlyRate), termMonths)) / 
+                           ((decimal)Math.Pow((double)(1 + monthlyRate), termMonths) - 1);
+        }
+
+        decimal remainingBalance = loanAmount;
+        decimal cumulativeInterest = 0;
+        DateTime currentDate = selectedDebt.BalanceDate ?? DateTime.Now;
+
+        for (int month = 1; month <= termMonths && remainingBalance > 0.01m; month++)
+        {
+            decimal interestPayment = remainingBalance * monthlyRate;
+            decimal principalPayment = monthlyPayment - interestPayment;
+            
+            // Adjust last payment if needed
+            if (principalPayment > remainingBalance)
+            {
+                principalPayment = remainingBalance;
+                monthlyPayment = principalPayment + interestPayment;
+            }
+            
+            remainingBalance -= principalPayment;
+            cumulativeInterest += interestPayment;
+
+            amortizationSchedule.Add(new AmortizationPayment
+            {
+                Month = month,
+                Interest = Math.Round(interestPayment, 0),
+                Principal = Math.Round(principalPayment, 0),
+                Payment = Math.Round(monthlyPayment, 0),
+                LoanBalance = Math.Round(remainingBalance, 0),
+                CumulativeInterest = Math.Round(cumulativeInterest, 0),
+                Date = currentDate.AddMonths(month)
+            });
+        }
+    }
+
     public void Dispose()
     {
         // Cleanup if needed
     }
-} 
+    
+    // Helper class for amortization schedule
+    private class AmortizationPayment
+    {
+        public int Month { get; set; }
+        public decimal Interest { get; set; }
+        public decimal Principal { get; set; }
+        public decimal Payment { get; set; }
+        public decimal LoanBalance { get; set; }
+        public decimal CumulativeInterest { get; set; }
+        public DateTime Date { get; set; }
+    }
+}
+
+<script src="/js/input-formatting.js"></script> 

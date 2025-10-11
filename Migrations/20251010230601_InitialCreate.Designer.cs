@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Financials.Migrations
 {
     [DbContext(typeof(FinancialsContext))]
-    [Migration("20251007003519_InitialCreate")]
+    [Migration("20251010230601_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -173,6 +173,9 @@ namespace Financials.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ReportHoverNote")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Timeframe")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -299,6 +302,9 @@ namespace Financials.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ReportDesc")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ReportHoverNote")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("SpouseId")

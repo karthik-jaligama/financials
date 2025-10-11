@@ -170,6 +170,9 @@ namespace Financials.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ReportHoverNote")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Timeframe")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -296,6 +299,9 @@ namespace Financials.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ReportDesc")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ReportHoverNote")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("SpouseId")
